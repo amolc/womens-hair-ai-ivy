@@ -418,7 +418,7 @@ $(".click-to-play").click(function () {
         arIntro.currentTime = 0;
     }
      
-    aiMusic2.play();
+    // aiMusic2.play();
 
     
     console.log("[AR] Click to play clicked - iOS Debug:", {
