@@ -1,6 +1,6 @@
 // ==================== LANGUAGE SETTING ====================
 // const localLanguage = "EN"; // Set default language to English
-console.log("main.js - v12.22")
+console.log("main.js - v13.22")
 
 // ==================== SET CUSTOM HEIGHT OF THE MAIN CONTAINER ====================
 function setVh() {
@@ -146,6 +146,11 @@ function onSound() {
     if (onIcon && offIcon) {
         onIcon.classList.remove('d-none');
         offIcon.classList.add('d-none');
+        if (aiMusic && aiMusic.paused) {
+            aiMusic.play().catch(e => {
+                console.error('[AI IDLE] Error playing aiMusic:', e.message);
+            });
+        }
         console.log('Sound unmuted');
     }
 }
@@ -407,6 +412,15 @@ function getArLoadingStatus() {
 
 
 $(".click-to-play").click(function () {
+    if (arIntro) {
+        arIntro.play();
+        arIntro.pause();
+        arIntro.currentTime = 0;
+    }
+     
+    aiMusic2.play();
+
+    
     console.log("[AR] Click to play clicked - iOS Debug:", {
         timestamp: Date.now(),
         isIOS: isIOS(),
@@ -492,7 +506,7 @@ $(".click-to-play").click(function () {
         
         if (result.success) {
         console.log("[AR] Assets loaded successfully, starting animations...");
-        playArIntroAnimation();
+        
         console.log("[AR] Post-loader audio state:", {
             arIntro: typeof arIntro !== 'undefined' ? {
                 src: arIntro.src,
@@ -504,11 +518,11 @@ $(".click-to-play").click(function () {
 
         popWhole.load();
         popWhole.currentTime = 0;
-        popWhole.play();
+       
 
         aiMusic2.load();
         aiMusic2.currentTime = 0;
-        aiMusic2.play();
+        safeAudioPlay(aiMusic2, 'ai-music-2-sound');
 
 
 
@@ -554,6 +568,7 @@ $(".click-to-play").click(function () {
                 stopAnimation();
                 stopIdleAnimation();
                 playArIntroAnimation();
+                
             }
         }
     }).catch((error) => {
@@ -905,8 +920,8 @@ function safeAudioPlay(audioElement, context = 'unknown') {
             audioElement.volume = 1.0;
             
             // iOS requires explicit user interaction - try to play on next tick
-            console.log(`[safeAudioPlay] Scheduling iOS audio play for: ${context} (100ms delay)`);
-            setTimeout(playAudio, 100);
+            console.log(`[safeAudioPlay] Scheduling iOS audio play for: ${context} (IMMEDIATE)`);
+            playAudio();
         } else {
             console.log(`[safeAudioPlay] Non-iOS device - playing audio immediately for: ${context}`);
             playAudio();
@@ -939,7 +954,8 @@ function playArIntroAnimation() {
 
     arIntro.currentTime = 0;
     safeAudioPlay(arIntro, 'AR Intro');
-    
+    safeAudioPlay(popWhole, 'AR Intro');
+   
     arIntroInterval = setInterval(function () {
         if (arIntroFrame < arIntroTotalFrames) {
             arIntroImg.src = `assets/Media/${localLanguage}/ARIntro/ARHair_Intro_${arIntroFrame.toString().padStart(5, '0')}.webp`;
@@ -1002,7 +1018,7 @@ function playArGiftAnimation() {
     arGift.currentTime = 0;
     timeoutGift = setTimeout(function() {
         safeAudioPlay(arGift, 'AR Gift');
-    }, 1300);
+    }, 10);
 
     const arGiftImg = document.getElementById('arGiftImg');
     arGiftInterval = setInterval(function () {
