@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Missing File Detection</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .missing-files {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎯 Test Missing File Detection</h1>
+    
+    <div class="test-section">
+        <h2>Quick Tests</h2>
+        <p>Click these buttons to test the missing file detection functionality:</p>
+        <button onclick="testCheckFileExists()">Test checkFileExists()</button>
+        <button onclick="testMissingFiles()">Test checkMissingFiles()</button>
+        <button onclick="testSingleAnimation()">Test Single Animation Check</button>
+        <button onclick="clearResults()">Clear Results</button>
+    </div>
+
+    <div class="test-section">
+        <h2>Test Results</h2>
+        <div id="test-results">
+            <p>Click a test button above to see results here...</p>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>Console Output</h2>
+        <p>Check the browser console for detailed logs. Press F12 to open developer tools.</p>
+    </div>
+
+    <!-- Load jQuery first -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <!-- Load required scripts -->
+    <script>
+        // Set up test environment
+        window.localLanguage = 'EN';
+        window.missingFiles = [];
+        
+        // Test function for checkFileExists
+        function testCheckFileExists() {
+            const resultsDiv = document.getElementById('test-results');
+            resultsDiv.innerHTML = '<p>Testing checkFileExists function...</p>';
+            
+            // Test with a file that should exist (this HTML file)
+            if (typeof checkFileExists === 'function') {
+                checkFileExists('test-missing-files.html', function(exists) {
+                    const result = document.createElement('div');
+                    result.className = exists ? 'success' : 'error';
+                    result.innerHTML = `<strong>Test 1:</strong> This HTML file - ${exists ? '✅ EXISTS' : '❌ MISSING'}`;
+                    resultsDiv.appendChild(result);
+                });
+                
+                // Test with a file that should NOT exist
+                checkFileExists('non-existent-file-12345.webp', function(exists) {
+                    const result = document.createElement('div');
+                    result.className = !exists ? 'success' : 'error';
+                    result.innerHTML = `<strong>Test 2:</strong> Non-existent file - ${!exists ? '✅ CORRECTLY DETECTED AS MISSING' : '❌ INCORRECTLY DETECTED AS EXISTING'}`;
+                    resultsDiv.appendChild(result);
+                });
+                
+                // Test with an animation frame file (likely missing)
+                checkFileExists('assets/Media/EN/AIIntro/06_AI_Intro_00000.webp', function(exists) {
+                    const result = document.createElement('div');
+                    result.className = exists ? 'success' : 'missing-files';
+                    result.innerHTML = `<strong>Test 3:</strong> AI Intro Frame 0 - ${exists ? '✅ EXISTS' : '❌ MISSING (Expected - shows detection works)'}`;
+                    resultsDiv.appendChild(result);
+                });
+            } else {
+                resultsDiv.innerHTML = '<div class="error">❌ checkFileExists function not found. Make sure main.js is loaded.</div>';
+            }
+        }
+        
+        // Test the full missing files check
+        function testMissingFiles() {
+            const resultsDiv = document.getElementById('test-results');
+            resultsDiv.innerHTML = '<p>Running comprehensive missing files check...</p>';
+            
+            if (typeof checkMissingFiles === 'function') {
+                // Override the display function to show results on this page
+                const originalDisplay = window.displayMissingFiles;
+                window.displayMissingFiles = function() {
+                    resultsDiv.innerHTML = '<div class="success">✅ Missing files check completed!</div>';
+                    
+                    if (window.missingFiles.length > 0) {
+                        const missingDiv = document.createElement('div');
+                        missingDiv.className = 'missing-files';
+                        missingDiv.innerHTML = `<strong>Found ${window.missingFiles.length} missing files:</strong><br>`;
+                        
+                        // Group by animation
+                        const byAnimation = {};
+                        window.missingFiles.forEach(file => {
+                            if (!byAnimation[file.animation]) byAnimation[file.animation] = [];
+                            byAnimation[file.animation].push(file);
+                        });
+                        
+                        Object.keys(byAnimation).forEach(anim => {
+                            const files = byAnimation[anim];
+                            missingDiv.innerHTML += `<br>📽️ ${anim}: ${files.length} missing files<br>`;
+                            files.slice(0, 5).forEach(file => {
+                                missingDiv.innerHTML += `  - ${file.type} ${file.frame !== null ? 'frame ' + file.frame : 'audio'}<br>`;
+                            });
+                            if (files.length > 5) {
+                                missingDiv.innerHTML += `  ... and ${files.length - 5} more<br>`;
+                            }
+                        });
+                        
+                        resultsDiv.appendChild(missingDiv);
+                    } else {
+                        const successDiv = document.createElement('div');
+                        successDiv.className = 'success';
+                        successDiv.innerHTML = '🎉 All animation files are present!';
+                        resultsDiv.appendChild(successDiv);
+                    }
+                };
+                
+                // Run the check
+                checkMissingFiles();
+                
+                // Restore original function
+                setTimeout(() => {
+                    window.displayMissingFiles = originalDisplay;
+                }, 1000);
+            } else {
+                resultsDiv.innerHTML = '<div class="error">❌ checkMissingFiles function not found. Make sure main.js is loaded.</div>';
+            }
+        }
+        
+        // Test single animation check
+        function testSingleAnimation() {
+            const resultsDiv = document.getElementById('test-results');
+            resultsDiv.innerHTML = '<p>Testing single animation check...</p>';
+            
+            if (typeof checkMissingFilesForAnimation === 'function') {
+                // Override the alert function to show results on page
+                const originalAlert = window.alert;
+                let alertMessage = '';
+                window.alert = function(msg) {
+                    alertMessage = msg;
+                    const resultDiv = document.createElement('div');
+                    resultDiv.className = msg.includes('✅') ? 'success' : (msg.includes('🚨') ? 'missing-files' : 'error');
+                    resultDiv.innerHTML = `<strong>Check Result:</strong><br>${msg.replace(/\n/g, '<br>')}`;
+                    resultsDiv.appendChild(resultDiv);
+                };
+                
+                // Test AI Intro animation
+                checkMissingFilesForAnimation('AI Intro');
+                
+                // Restore original alert
+                setTimeout(() => {
+                    window.alert = originalAlert;
+                }, 1000);
+            } else {
+                resultsDiv.innerHTML = '<div class="error">❌ checkMissingFilesForAnimation function not found. Make sure main.js is loaded.</div>';
+            }
+        }
+        
+        function clearResults() {
+            document.getElementById('test-results').innerHTML = '<p>Results cleared. Click a test button to run tests...</p>';
+        }
+        
+        // Load main.js to get the functions
+        const script = document.createElement('script');
+        script.src = 'main.js';
+        script.onload = function() {
+            console.log('✅ main.js loaded successfully');
+            console.log('Available functions:', {
+                checkFileExists: typeof checkFileExists,
+                checkMissingFiles: typeof checkMissingFiles,
+                checkMissingFilesForAnimation: typeof checkMissingFilesForAnimation,
+                displayMissingFiles: typeof displayMissingFiles
+            });
+        };
+        script.onerror = function() {
+            console.error('❌ Failed to load main.js');
+            document.getElementById('test-results').innerHTML = '<div class="error">❌ Failed to load main.js</div>';
+        };
+        document.head.appendChild(script);
+    </script>
+</body>
+</html>

@@ -1,0 +1,353 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ivy Bears</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.15.4/css/all.css"
+        integrity="sha384-rqn26AG5Pj86AF4SO72RK5fyefcQ/x32DNQfChxWvbXIyXFePlEktwD18fEz+kQU" crossorigin="anonymous">
+    <script defer src="https://pro.fontawesome.com/releases/v5.15.4/js/all.js"
+        integrity="sha384-8nTbev/iV1sg3ESYOAkRPRDMDa5s0sknqroAe9z4DiM+WDr1i/VKi5xLWsn87Car"
+        crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />
+    <link rel="stylesheet" type="text/css"
+        href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css" />
+
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/addons/p5.sound.min.js"></script> -->
+</head>
+
+<body>
+    <div class="main-container">
+        <!-- <div class="custom-popup d-none">
+            <div class="popup-container d-none">
+                <h3>Allow sounds and music.</h3>
+                <a class="on-sound">ALLOW</a>
+            </div>
+
+            <div class="loading-container">
+                <div class="loading-box">
+                    <div id="loading-bar" style="width: 0%; height: 20px; background-color: green;"></div>
+                </div>
+                <h3 id="loading-text">Loading your experience: <span class="loading-percentage">0%</span></h3>
+            </div>
+
+        </div>
+        <div class="camera-prompt">
+            <div class="prompt-message">
+                <h3>This augmented reality experience requires access to your device's camera</h3>
+            </div>
+            <button class="click-camera">Allow Access</button>
+        </div> -->
+
+        <div class="all-prompts-container">
+            <div class="camera-prompt">
+                <div class="prompt-message">
+                    <h3>This augmented reality experience requires access to your device's camera</h3>
+                </div>
+                <button class="click-camera">Allow Access</button>
+            </div>
+            <div class="custom-popup d-none">
+                <div class="popup-container d-none">
+                    <h3>Allow sounds and music.</h3>
+                    <a class="on-sound">ALLOW</a>
+                </div>
+    
+                <div class="loading-container">
+                    <div class="loading-box">
+                        <div id="loading-bar" style="width: 0%; height: 20px; background-color: green;"></div>
+                    </div>
+                    <h3 id="loading-text">Loading your experience: <span class="loading-percentage">0%</span></h3>
+                </div>
+    
+            </div>
+        </div>
+
+        <!-- <h1>Camera Access</h1> -->
+        <video class="splash-page" playsinline src="assets/ARR Splash Page.mp4"></video>
+
+        <video id="video" autoplay playsinline style="border: 1px solid black;"></video>
+        <p id="error-message" style="color: red;"></p>
+
+
+        <div class="ivybears-header d-none">
+            <div class="back-button d-none">
+                <!-- <img src="assets/back-button.svg" alt=""> -->
+                <img src="assets/back-button.webp" alt="">
+            </div>
+            <img src="assets/ivybears-header.webp" class="name-title-2" alt="">
+        </div>
+
+        <div class="ar-into-animation d-none op-0">
+            <div class="back-button ask-me-anyting d-none op-0-1">
+                <img src="assets/back-button.svg" alt="">
+            </div>
+            <div class="ar-animation-sequence-container">
+                <div class="png-sequence-ar d-none">
+                    <div class="png-frame-ar intro">
+                        <img id="arIntroImg" src="assets/Media/EN/ARIntro/ARHair_Intro_00000.webp" alt="AR Intro Frame">
+                        <audio id="ar-intro" preload="auto" src="assets/Media/ARVO/ARIntro VO.mp3#t=0.001"></audio>
+                    </div>
+                    <div class="png-frame-ar idle d-none">
+                        <img id="arIdleImg" src="assets/Media/EN/ARIdle/ARBear_Idle_00000.webp" alt="AR Idle Frame">
+                    </div>
+                    <div class="png-frame-ar gift d-none">
+                        <img id="arGiftImg" src="assets/Media/EN/ARGift/ARBear_Gift_00000.webp" alt="AR Gift Frame">
+                        <audio id="ar-gift" preload="auto" src="assets/Media/ARVO/Gift VO.mp3#t=0.001"></audio>
+                    </div>
+                    <div class="png-frame-ar blower d-none">
+                        <img id="arBlowerImg" src="assets/Media/EN/ARBlower/ARBear_Blower_00000.webp"
+                            alt="AR Blower Frame">
+                        <audio id="ar-blower" preload="auto" src="assets/Media/ARVO/Blower VO.mp3#t=0.001"></audio>
+                    </div>
+                    <div class="png-frame-ar nail-polish d-none">
+                        <img id="arNailPolishImg" src="assets/Media/EN/ARBlower/ARBear_Blower_00000.webp"
+                            alt="AR Nail Polish Frame">
+                        <audio id="ar-nail-polish" preload="auto"
+                            src="assets/Media/ARVO/Nail Polish VO.mp3#t=0.001"></audio>
+                    </div>
+                    <div class="png-frame-ar mirror d-none">
+                        <img id="arMirrorImg" src="assets/Media/EN/ARBlower/ARBear_Blower_00000.webp"
+                            alt="AR Mirror Frame">
+                        <audio id="ar-mirror" preload="auto" src="assets/Media/ARVO/Mirror VO.mp3#t=0.001"></audio>
+                    </div>
+                </div>
+            </div>
+
+            <div class="gadget-container">
+
+                <div class="gadget-item op-0-1-none">
+                    <img class="no-glow" src="assets/Gift Box.webp" alt="">
+                    <img class="with-glow d-none" src="assets/Gift Box Glow.webp" alt="">
+                </div>
+
+                <div class="gadget-item op-0-1-none">
+                    <img class="no-glow" src="assets/Hair Dryer.webp" alt="">
+                    <img class="with-glow d-none" src="assets/Hair Dryer Glow.webp" alt="">
+                </div>
+
+                <div class="gadget-item op-0-1-none">
+                    <img class="no-glow" src="assets/Nail polish.webp" alt="">
+                    <img class="with-glow d-none" src="assets/Nail polish Glow.webp" alt="">
+                </div>
+
+                <div class="gadget-item op-0-1-none">
+                    <img class="no-glow" src="assets/Mirror.webp" alt="">
+                    <img class="with-glow d-none" src="assets/Mirror Glow.webp" alt="">
+
+                </div>
+                <audio id="pop-whole" preload="auto" src="assets/Media/Mouth_Pop_Combined.wav"></audio>
+            </div>
+
+            <div class="tap-to-learn-container">
+                <h2><img src="assets/tap-to-learn.svg" alt=""> <span class="tap-cta">Tap To Learn More</span></h2>
+            </div>
+
+            <div class="menu-container">
+                <div class="menu-items">
+                    <img class="click-to-play op-0-1" src="assets/Click to play - CTA.svg" alt="">
+                </div>
+
+                <div class="menu-items">
+                    <img class="hold-to-speak ask-me-anyting op-0-1-none" src="assets/ask-me-anyting.svg" alt="">
+                </div>
+
+                <div class="menu-items">
+                    <!-- <img class="sound-toggle on" src="assets/Sound on CTA.svg" alt=""> -->
+                    <!-- <img class="sound-toggle off d-none" src="assets/Sound off CTA.svg" alt=""> -->
+                </div>
+
+            </div>
+
+            <div class="shop-now-popup op-0-1">
+                <div class="close-popup">
+                    <img src="assets/close-button.svg" alt="">
+                </div>
+                <div class="shop-now-inner">
+                    <h3 class="pink"><span class="big-h3">20%</span> <span class='norm'>off when you spend over €80 on our website</span></h3>
+                    <h3 class="black">Promo Code</h3>
+                    <h3 class="pink big-h3">IVYBEARS-FREE20</h3>
+                </div>
+                <a href="https://www.ivybears.de/" target="_blank">
+                    <img src="assets/shop-online-btn.webp" alt="">
+                </a>
+            </div>
+        </div>
+
+        <div class="ai-chat d-none">
+            <!-- <div class="back-button d-none">
+                <img src="assets/back-button.svg" alt="">
+            </div> -->
+            <div class="temp-button d-none">
+                <button class="sprite-btn">click sprite</button>
+                <button class="png-sequence-btn">click png sequence</button>
+            </div>
+
+            <!-- <div class="animation-sequence-container">
+                <h1>I'm ADA. Your Health AI Advisor.</h1>
+                <div class="png-sequence-ai-1">
+                    <div class="png-frame-ai intro"></div>
+                    <div class="png-frame-ai speaking d-none"></div>
+                    <div class="png-frame-ai idle d-none"></div>
+                    <audio id="ai-vo" preload="auto" src="assets/Media/VO/Intro Ai VO.mp3#t=0.001"
+                        preload="auto"></audio>
+                    <audio id="ai-music" preload="auto" src="assets/Media/Music.mp3#t=0.001" preload="auto"></audio>
+                </div>
+            </div> -->
+
+            <div class="suggestions-all">
+                <div class="suggestions-slider">
+                    <div class="suggestions-box">
+                        <div class="suggestions-text">
+                            <!-- <p><strong>Why choose Ivybears</strong></p> -->
+                            <p>🐻 What is Ivybears' most popular product?</p>
+                        </div>
+                    </div>
+                    <div class="suggestions-box">
+                        <div class="suggestions-text">
+                            <!-- <p><strong>Is it better?</strong></p> -->
+                            <p>🍃 Are Ivybears gummies vegan and sugar-free?</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="suggestions-slider">
+                    <div class="suggestions-box">
+                        <div class="suggestions-text">
+                            <!-- <p><strong>Is it better?</strong></p> -->
+                            <p>🫙 How many products does Ivybears have?</p>
+                        </div>
+                    </div>
+                    <div class="suggestions-box">
+                        <div class="suggestions-text">
+                            <!-- <p><strong>Time to results?</strong></p> -->
+                            <p>🧪 Do IvyBears contain any artificial ingredients?</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="suggestions-slider">
+                    <div class="suggestions-box">
+                        <div class="suggestions-text">
+                            <!-- <p><strong>Is it better?</strong></p> -->
+                            <p>💪 How long before Ivybears show visible results?</p>
+                        </div>
+                    </div>
+                    <div class="suggestions-box">
+                        <div class="suggestions-text">
+                            <!-- <p><strong>Why choose Ivybears</strong></p> -->
+                            <p>⚗️ Are Ivybears clinically tested for effectiveness?</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="chatbot-content">
+                <ul class="chatbot__box op-0">
+                </ul>
+                <div class="chatbot__input_box">
+                    <div class="chatbot__input_inner first-load">
+                        <div class="chatbot_inner_1">
+                            <div class="plus-icon">
+                                <img src="assets/plus 1.svg" alt="">
+                            </div>
+                            <div class="plus-content d-none">
+                                <input class="upload-image" type="file" id="upload-image" name="upload-image">
+                                <label class="upload-image-label" for="upload-image"></label>
+                            </div>
+                            <div class="text-container">
+                                <textarea class="chatbot__textarea" required></textarea>
+                                <div class="voice-timer d-none">
+                                    <p>Speaking...</p>
+                                    <p class="timer-seconds">0:00</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chatbot_inner_2 d-none">
+                            <div class="mic-container">
+                                <!-- <button class="startRecord on-bar"><img src="assets/Mic Icon 1.svg" alt=""></button>
+                                <button class="stopRecord on-bar d-none"><img src="assets/Mic Icon 1.svg" alt=""></button> -->
+                                <button class="startRecord on-bar"><img src="assets/mic-black.webp" alt=""></button>
+                                <button class="stopRecord on-bar d-none"><img src="assets/mic-black.webp"
+                                        alt=""></button>
+                            </div>
+                            <span id="send-btn" class="d-none material-symbols-outlined"><img
+                                    src="assets/send-icon-1.svg" alt=""></span>
+                        </div>
+
+                        <div class="mic-guide d-none">
+                            <p>Tap & hold <img src="assets/Mic Icon 1.svg" alt=""> button to speak</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="animation-sequence-container">
+                <!-- <h1>I'm ADA. Your Health AI Advisor.</h1> -->
+                <img src="assets/ada-new-title.png" class="name-title" alt="">
+
+                <div class="png-sequence-ai-1">
+                    <div class="png-frame-ai intro">
+                        <img id="aiIntroImg" src="assets/Media/AiIntro/Intro Animation V2_00000.webp"
+                            alt="AI Intro Frame">
+                    </div>
+                    <!-- <div class="png-frame-ai speaking d-none">
+                        <img id="aiSpeakingImg" src="assets/Media/AiSpeaking/Speaking Animation V2_00000.webp"
+                            alt="AI Speaking Frame">
+                    </div> -->
+                    <div class="png-frame-ai idle d-none">
+                        <img id="aiIdleImg" src="assets/Media/AiIdle/Idle Animation V2 00000.webp" alt="AI Idle Frame">
+                    </div>
+                    <audio id="ai-vo" preload="auto" src="assets/Media/VO/Intro Ai VO.mp3#t=0.001"
+                        preload="auto"></audio>
+                    <audio id="ai-music" preload="auto" src="assets/Media/Music_Lower_2.mp3#t=0.001"
+                        preload="auto"></audio>
+                    <audio id="ai-music-2" preload="auto" src="assets/Media/Music_Lower.mp3#t=0.001"
+                        preload="auto"></audio>
+                    <audio id="dummy-sound" preload="auto" src="assets/Media/dummy-sound.mp3#t=0.001"
+                        preload="auto"></audio>
+                </div>
+            </div>
+            <div class="menu-container">
+                <div class="menu-items">
+                    <img class="click-to-play" src="assets/Click to play - CTA.svg" alt="">
+                </div>
+
+                <div class="menu-items">
+                    <div class="hold-to-speak startRecord outside" id="startRecord">
+                        <img src="assets/tap-to-speak.svg" alt="">
+                    </div>
+
+                    <div class="hold-to-speak stopRecord outside d-none" id="stopRecord">
+                        <img src="assets/tap-to-stop.svg" alt="">
+                    </div>
+                </div>
+
+
+                <div class="menu-items">
+                    <!-- <img class="sound-toggle on" src="assets/Sound on CTA.svg" alt=""> -->
+                    <!-- <img class="sound-toggle off d-none" src="assets/Sound off CTA.svg" alt=""> -->
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div id="reloading-overlay">
+        <p></p>
+    </div>
+</body>
+
+</html>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+<script src="geo.js"></script>
+<script src="ai.js"></script>
+<script src="main.js"></script>

@@ -1,0 +1,1310 @@
+/* =================== REUSABLE CODES ==================== */
+@import url('https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+/* CUSTOM LOCAL FONTS */
+@font-face {
+    font-family: 'Avenir Book';
+    src: url('assets/Fonts/Avenir-Book-02.woff') format('woff');
+}
+
+/* @font-face {
+    font-family: 'Avenir Book 2';
+    src: url('assets/Fonts/Avenir-Book.woff') format('woff');
+} */
+
+h1 {
+    /* font-family: "Barlow", serif !important; */
+    font-family: "Avenir Book" !important;
+    margin: 0;
+}
+
+h2 {
+    font-size: clamp(1.2rem, 1.6vw, 1.4rem);
+    /* font-family: "Barlow", serif !important; */
+    font-family: "Avenir Book" !important;
+    margin: 0;
+}
+
+h3 {
+    /* font-family: "Barlow", serif !important; */
+    font-family: "Avenir Book" !important;
+    font-size: clamp(1.1rem, 1.5vw, 1.3rem);
+    margin: 0;
+}
+
+h4 {
+    /* font-family: "Barlow", serif !important; */
+    font-family: "Avenir Book" !important;
+    margin: 0;
+}
+
+p {
+    font-size: clamp(.9rem, .9vw, 1rem);
+    /* font-family: "Barlow", serif !important; */
+    font-family: "Avenir Book" !important;
+    margin: 0;
+}
+
+.d-block {
+    display: block !important;
+}
+
+.d-none {
+    display: none !important;
+    z-index: -100;
+}
+
+.op-0 {
+    opacity: 0 !important;
+    transition: .5s;
+}
+
+.op-0-1 {
+    opacity: 0 !important;
+    transition: opacity 0.5s;
+    z-index: -1 !important;
+}
+
+.op-0-1-none {
+    opacity: 0 !important;
+    z-index: -1 !important;
+    transition: 0s;
+}
+
+.op-1 {
+    opacity: 1 !important;
+    transition: .5s;
+}
+
+
+
+/* TABLET */
+@media(max-width:980px) {}
+
+/* MOBILE */
+@media(max-width:767px) {}
+
+/* Loader or blank screen styling */
+#reloading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* background: white; */
+    background-image: url(assets/IVYBEARS\ AI\ ADA_9x16_Cover_FA.webp);
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    z-index: 9999;
+    display: none;
+    /* Hidden by default */
+    justify-content: center;
+    align-items: center;
+}
+
+/* #reloading-overlay p {
+    font-size: 18px;
+    color: black;
+} */
+
+#reloading-overlay p {
+    border: 5px solid rgba(255, 255, 255, 0.5);
+    border-left-color: #EB0189;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    animation: donut-spin 2s linear infinite;
+}
+
+/* =================== HOME ==================== */
+html,
+body {
+    overflow: hidden;
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    touch-action: none;
+}
+
+img {
+    user-select: none !important;
+    -webkit-touch-callout: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+    outline: none !important;
+}
+
+#video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+:root {
+    --vh: 100vh;
+}
+
+.main-container {
+    background-image: url(assets/IVYBEARS\ AI\ ADA_9x16_Cover_FA.webp);
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    /* height: 95vh; */
+    height: calc(var(--vh));
+    position: relative;
+}
+
+.all-prompts-container{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image: url(assets/IVYBEARS\ AI\ ADA_9x16_Cover_FA.webp);
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    z-index: 5;
+}
+
+.no-bg {
+    background-image: none !important;
+    background-color: #000 !important;
+}
+
+.camera-prompt {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: min(500px, 90%);
+    text-align: center;
+}
+
+.prompt-message {
+    background-color: rgba(255, 255, 255, .8);
+    padding: 1em 2em;
+    border-radius: 15px;
+    text-align: center;
+}
+
+.click-camera {
+    color: #204900;
+    /* font-family: "Barlow", serif; */
+    font-family: "Avenir Book" !important;
+    font-size: clamp(1rem, 1.2vw, 1.1rem);
+    font-weight: 700;
+    text-transform: uppercase;
+    background-color: #E9E9EA;
+    border: 2px solid #fff;
+    border-radius: 30px;
+    padding: .7em 1em;
+    margin-top: 1.5em;
+    cursor: pointer;
+}
+
+/* ==================== ON SOUNDS ====================  */
+
+.custom-popup {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    /* background-image: url(assets/IVYBEARS\ AI\ ADA_9x16_Cover_FA.webp); */
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+.custom-popup::before {
+    content: "" !important;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, .5) !important;
+    top: 0;
+    left: 0;
+    z-index: 0;
+}
+
+.popup-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    /* background-color: rgba(0, 0, 0, 0); */
+    border-radius: 15px;
+    padding: 1em;
+    width: 70%;
+    max-width: 500px;
+    text-align: center;
+}
+
+.popup-container h3 {
+    background-color: rgba(255, 255, 255, .8);
+    color: #2F2F2F;
+    border-radius: 10px;
+    padding: .7em 1em;
+    font-weight: 700;
+}
+
+.popup-container .on-sound {
+    color: #204900 !important;
+    /* font-family: "Barlow", serif; */
+    font-family: "Avenir Book" !important;
+    font-size: clamp(1rem, 1.2vw, 1.1rem);
+    font-weight: 700;
+    text-transform: uppercase;
+    background-color: #E9E9EA;
+    border: 2px solid #fff;
+    border-radius: 30px;
+    padding: .7em 1em;
+    margin-top: 1.5em;
+    cursor: pointer;
+    width: min(100px, 90%) !important;
+    display: inline-block;
+}
+
+/* ==================== SPLASH PAGE ==================== */
+
+.splash-page {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    /* z-index: 999 !important; */
+    z-index: 4 !important;
+    object-fit: cover;
+}
+
+/* ==================== IVYBEARS HEADER ==================== */
+
+.ivybears-header {
+    background-color: #fff;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: .5em 0;
+    z-index: 99;
+}
+
+.back-button {
+    position: absolute;
+    left: 2%;
+    top: 18% !important;
+    cursor: pointer;
+    z-index: 99;
+}
+
+.back-button img{
+    width: 35px;
+}
+
+.name-title-2 {
+    display: block;
+    margin: auto;
+    width: 250px;
+}
+
+/* ==================== AI CHAT ==================== */
+
+.ai-chat {
+    /* background-color: red; */
+    position: absolute;
+    top: 0;
+    height: 100%;
+    width: 100%;
+
+}
+
+/* ---------- MENU ITEMS ---------- */
+.menu-container {
+    position: absolute;
+    width: 95%;
+    top: 67%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: .5s;
+    z-index: 2 !important;
+}
+
+
+.ai-chat .menu-container {
+    /*     background-color: rgba(255,255,0, .5); */
+    transform: translate(-50%, 0%) !important;
+    transition: .5s;
+    top: auto;
+    bottom: 22%;
+}
+
+.ai-chat .menu-container .menu-items {
+    position: relative;
+    transition: .5s;
+    z-index: 1;
+}
+
+.menu-container .menu-items:first-child img {
+    width: 16vw !important;
+    max-width: 100px;
+}
+
+.menu-container .menu-items:first-child {
+    height: 220px;
+    display: flex;
+    align-items: center;
+}
+
+.menu-container .menu-items:last-child {
+    width: 85px;
+}
+
+.sound-toggle {
+    width: min(35px, 100%) !important;
+}
+
+.menu-items img {
+    cursor: pointer;
+    transition: .5s;
+}
+
+/* .menu-done {
+    top: 53%;
+    transition: .5s;
+} */
+
+.menu-done {
+    /* transform: translatey(0) !important; */
+    top: 220px !important;
+    bottom: auto !important;
+    transition: .5s;
+}
+
+
+.hold-to-speak {
+    width: 100% !important;
+    margin: auto;
+    display: block;
+    text-align: center;
+}
+
+.hold-to-speak img{
+    width: 80% !important;
+    height: 100% !important;
+    object-fit: contain; 
+}
+
+.ask-me-anyting {
+    width: 80% !important;
+}
+
+.hold-to-speak.outside {
+    position: relative;
+}
+
+.scale-bigger {
+    transform: scale(1.1);
+    transition: .5s;
+}
+
+/* ---------- CHAT CONTAINER ---------- */
+
+.suggestions-all {
+    /*     background-color: red; */
+    width: 100%;
+    position: absolute !important;
+    bottom: 10vh !important;
+    left: 50%;
+    transform: translate(-50%, 0%);
+    width: 90%;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    gap: .5em;
+}
+
+/* add peek */
+.suggestions-slider .slick-list {
+    padding: 0 45% 0 0 !important;
+}
+
+.suggestions-slider .slick-slide {
+    margin: 0 .3em;
+    width: auto !important;
+    /* max-width: 95vw !important; */
+    max-width: 100% !important;
+}
+
+.suggestions-slider .slick-list {
+    margin: 0 -.3em;
+    scroll-behavior: smooth;
+}
+
+.suggestions-box {
+    background-color: #f0f0f0;
+    /* background-color: #ffffff; */
+    padding: .5em;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.suggestions-text{
+    height: auto !important;
+}
+
+.suggestions-text strong {
+    font-weight: 600;
+}
+
+.suggestions-text p {
+    font-weight: 400;
+    font-size: clamp(.85rem, .85vw, .95rem);
+}
+
+/* add spacing */
+.chatbot__chat.incoming .thinking {
+    padding-right: 1.5em;
+}
+
+/* add elipsis */
+.chatbot__chat.incoming .thinking::after {
+    content: '...';
+    display: inline-block;
+    animation: ellipsisAnimation 1s infinite;
+    position: absolute;
+}
+
+.loading-ellipsis::after {
+    content: '...';
+    display: inline-block;
+    animation: ellipsisAnimation 1s infinite;
+    position: absolute;
+}
+
+/* elipsis animation */
+@keyframes ellipsisAnimation {
+    0% {
+        content: '';
+    }
+
+    33% {
+        content: '.';
+    }
+
+    66% {
+        content: '..';
+    }
+
+    100% {
+        content: '...';
+    }
+}
+
+.chatbot-container {
+    position: relative;
+    z-index: 2 !important;
+}
+
+.chatbot-container,
+.chatbot,
+.inner-chatbot,
+.chatbot-content {
+    height: 100%;
+    width: 100%;
+}
+
+.chatbot-content {
+    /* background-color: red; */
+    height: 38%;
+    bottom: 0%;
+    position: absolute;
+}
+
+.chatbot__box {
+    /* background-color: blue; */
+    list-style: none;
+    padding: 0;
+    width: 100%;
+    margin: auto;
+    overflow: auto;
+    height: 77%;
+    position: relative;
+    bottom: 0%;
+}
+
+.chatbot__chat {
+    display: flex;
+    max-width: 95%;
+    margin: auto;
+}
+
+.chatbot__chat.incoming {
+    display:inline-flex !important;
+    max-width: 95%;
+    margin-left: 2.5% !important;
+}
+
+.chatbot__chat p {
+    max-width: 75%;
+    background-color: rgba(227, 227, 227, .9);
+    margin-bottom: 1em;
+    padding: 1em;
+}
+
+.chatbot__chat.outgoing p {
+    background-color: rgba(227, 227, 227, 1) !important;
+}
+
+.chatbot__chat.incoming p {
+    border-radius: 0 20px 20px 20px;
+    white-space: break-spaces;
+}
+
+.chatbot__chat.incoming {
+    display: flex;
+    gap: 0;
+    position: relative;
+}
+
+.chatbot__chat.incoming span:has(img) {
+    width: auto !important;
+    opacity: 1 !important;
+}
+
+.chatbot__chat.incoming img {
+    background-color: #EC008C;
+    border-radius: 50%;
+    padding: .2em .2em .1em;
+    width: 25px !important;
+}
+
+.chatbot__chat.outgoing {
+    justify-content: flex-end;
+}
+
+.chatbot__chat.outgoing p {
+    border-radius: 20px 0 20px 20px;
+}
+
+
+.chatbot__chat p .url {
+    word-break: break-all;
+    /* Break URLs at any character */
+    overflow-wrap: break-word;
+    /* Ensure long URLs break within words */
+    color: #EC008C;
+}
+
+
+.chatbot__input_box {
+    /* background-color: pink; */
+    margin: auto;
+    position: relative;
+    width: 90%;
+}
+
+.audio-toggle {
+    display: flex;
+    align-items: end;
+    justify-content: end;
+    position: absolute;
+    bottom: -20px;
+    width: 100%;
+}
+
+.audio-toggle img {
+    width: 25px !important;
+    height: 25px !important;
+    object-fit: contain !important;
+    background-color: transparent !important;
+    cursor: pointer
+}
+
+
+.mic-guide {
+    position: absolute;
+    bottom: -60%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    display: none;
+}
+
+.mic-guide p {
+    display: flex;
+    gap: .5em;
+    justify-content: center;
+    align-items: center;
+}
+
+.mic-guide p {
+    color: #fff;
+}
+
+.mic-guide img {
+    width: 12px;
+}
+
+.chatbot__input_inner {
+    background-color: transparent;
+    display: flex;
+    position: relative;
+}
+
+.chatbot_inner_1 {
+    display: flex;
+    width: 100%;
+    background-color: #E3E3E3;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+
+.plus-icon {
+    width: 20px;
+    display: flex;
+    justify-content: center;
+    margin: 0 .5em;
+    cursor: pointer;
+    display: none;
+}
+
+.plus-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.plus-content {
+    /*     display: none; */
+    position: absolute;
+    background-color: #fff;
+    top: -60%;
+    left: 0;
+    z-index: 99;
+}
+
+.chatbot_inner_2 {
+    display: flex;
+    width: 50px;
+    justify-content: end !important;
+    align-items: center;
+}
+
+.mic-container {
+    margin-bottom: -.3em;
+}
+
+.startRecord.on-bar {
+    background-color: transparent;
+    border: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    position: relative;
+    cursor: pointer;
+}
+
+.startRecord.on-bar img {
+    object-fit: contain;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 70%;
+    height: 70%;
+}
+
+.stopRecord.on-bar {
+    background-color: #EC008C;
+    border: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    position: relative;
+    cursor: pointer;
+}
+
+.stopRecord.on-bar img {
+    object-fit: contain;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 70%;
+    height: 70%;
+}
+
+.stopRecord.loading:after {
+    content: "";
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    border-left-color: #fff;
+    border-radius: 50%;
+    width: 100%;
+    height: 100%;
+    animation: donut-spin 2s linear infinite;
+    position: absolute;
+    top: -5%;
+    left: -5%;
+}
+
+.startRecord.outside {
+    transition: .5s;
+    position: relative;
+    cursor: pointer;
+}
+
+.stopRecord.outside {
+    transition: .5s;
+    position: relative;
+    cursor: pointer;
+}
+
+.stopRecord.outside.loading-bigger:after {
+    content: "";
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    border-left-color: #fff;
+    border-radius: 50%;
+    width: 38%;
+    height: 43%;
+    animation: donut-spin 2s linear infinite;
+    position: absolute;
+    top: 26%;
+    left: 30%;
+    z-index: 1;
+}
+
+@keyframes donut-spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+
+#startVoice.holding {
+    background-color: #EC008C !important;
+}
+
+#startVoice img {
+    width: 70%;
+    height: 70%;
+    object-fit: contain;
+}
+
+#send-btn {
+    width: 40px !important;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #EC008C;
+    cursor: pointer;
+    border-radius: 50%;
+}
+
+#send-btn img {
+    width: 50%;
+    height: 50%;
+    object-fit: contain;
+}
+
+
+.text-container {
+    width: 100% !important;
+    position: relative;
+    padding-left: 1em;
+}
+
+.text-container .chatbot__textarea {
+    margin-bottom: -.3em;
+    border: 0;
+    max-height: 200px;
+    width: 100% !important;
+    padding: .8em 0 .5em !important;
+    height: 25px !important;
+    outline: none;
+    resize: none;
+    background-color: #E3E3E3;
+    /* font-family: "Barlow", serif; */
+    font-family: "Avenir Book" !important;
+    font-size: clamp(.9rem, .9vw, 1rem) !important;
+    font-weight: 400 !important;
+}
+
+/* .chatbot__textarea::placeholder {
+    font-family: "Barlow", serif;
+} */
+
+.voice-timer {
+    display: flex;
+    position: absolute;
+    top: 0;
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
+    background-color: #E3E3E3;
+    /* width: 95%; */
+    width: 90%;
+    right: auto;
+    left: 50%;
+    padding-left: .5em;
+    /* transform: translatex(-52%); */
+    transform: translatex(-50%);
+}
+
+/* .voice-timer p:first-child{
+    display: none;
+} */
+
+.voice-timer p {
+    color: #6d6d6d;
+}
+
+/* ==================== AR INTO ANIMATION ==================== */
+.ar-into-animation {
+    /*     background-color: red; */
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.need-help {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #1f1f1f;
+    border-radius: 40px;
+    padding: .5em 2em;
+    text-align: center;
+    cursor: pointer;
+    display: none;
+}
+
+/* h3 design */
+.need-help h3 {
+    color: #fff;
+    font-weight: 500;
+}
+
+/* h2 design */
+.need-help h2 {
+    color: #fff;
+    font-weight: 700;
+}
+
+/* h2 span */
+.need-help h2 span {
+    color: #DB0F8A;
+}
+
+/* ---------- GADGET CONTAINER ---------- */
+/* make side by side */
+.gadget-container {
+    /*     background-color: red; */
+    width: 90%;
+    position: absolute;
+    bottom: 10%;
+    left: 50%;
+    transform: translatex(-50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1em;
+    z-index: 3;
+}
+
+/* custom width */
+.gadget-container .gadget-item {
+    width: 25%;
+    text-align: center;
+    transition: transform 0.5s;
+}
+
+/* image sizes */
+.gadget-container .gadget-item img {
+    width: 20vw;
+    max-width: 100px;
+    cursor: pointer;
+}
+
+.with-glow {
+    transition: transform 0.5s;
+}
+
+.animation-select {
+    transform: scale(1.5) rotate(30deg);
+    transition: transform 0.5s;
+}
+
+/* tap to learn more design */
+.tap-to-learn-container {
+    /*     background-color: red; */
+    position: absolute;
+    bottom: 2%;
+    left: 50%;
+    transform: translatex(-50%);
+    width: 95%;
+}
+
+.tap-to-learn-container h2 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #EC008C;
+    text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
+}
+
+
+
+/* ==================== ANIMATIONS ==================== */
+/* ---------- SPRITE ANIMATION ---------- */
+.ai-animation {
+    position: absolute;
+    /*     background-color: red; */
+    height: 250px;
+    width: 200px;
+    left: 30%;
+    top: 10%;
+    transform: translatex(-50%);
+}
+
+/* SPRITE ANIMATION STYLE 2 */
+.sprite-animation {
+    background: url(assets/Media/AiSprite/IntroSprite1.webp);
+    background-size: 1600% 1100%;
+    width: 100%;
+    /* This is 100%/16 */
+    height: 100%;
+    /* This is 100%/11 */
+}
+
+.sprite-animation.animate-sprite {
+    animation: bear-idleX 0.5s steps(16) infinite,
+        bear-idleY 5.5s steps(11) infinite;
+}
+
+
+@keyframes bear-idleX {
+    0% {
+        background-position-x: 0;
+    }
+
+    100% {
+        background-position-x: -1600%;
+    }
+}
+
+@keyframes bear-idleY {
+    0% {
+        background-position-y: 0;
+    }
+
+    100% {
+        background-position-y: -1100%;
+    }
+}
+
+/* ---------- PNG SEQUENCE ---------- */
+.animation-sequence-container {
+    /*     background-color: pink; */
+    position: absolute;
+    /* top: 35%; */
+    top: 80px;
+    bottom: auto;
+    left: 50%;
+    /* transform: translate(-50%, -50%); */
+    transform: translateX(-50%);
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.name-title {
+    width: min(500px, 80%);
+}
+
+.animation-sequence-container h1 {
+    font-size: clamp(1.3rem, 1.7vw, 1.6rem) !important;
+    text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
+    width: 95%;
+    color: #EC008C;
+}
+
+.png-sequence-ai-1 {
+    /*     background-color: lightblue */
+    position: relative;
+    /* height: 340px;
+    width: 340px; */
+    width: 65vw !important;
+    height: 65vw !important;
+    max-height: 330px;
+    max-width: 330px;
+    /* margin-left: 5%; */
+}
+
+.png-frame-ai {
+    /* background-color: blue; */
+    width: 100%;
+    height: 100%;
+    /* background: url('assets/Media/AiSequence/AiHair_Intro_00000.webp') no-repeat; */
+    background-size: contain !important;
+    background-position: center !important;
+}
+
+
+.png-frame-ai {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.png-frame-ai img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    /* Ensures image scales correctly */
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.png-frame-ai.intro {
+    transform: scale(1.04);
+    margin-left: 5%;
+}
+
+.png-frame-ai.idle {
+    transform: scale(0.97);
+    margin-left: -2.5%;
+    /* margin-left: 0%; */
+}
+
+.png-frame-ai.speaking {
+    transform: scale(1.06);
+    margin-left: -.5% !important;
+    padding-top: .05em;
+}
+
+.temp-button {
+    top: 0%;
+    left: 50%;
+    transform: translatex(-50%);
+    position: absolute;
+    z-index: 999 !important;
+    /* opacity: 0; */
+}
+
+/* WITH AI CHAT */
+.ai-chat.with-chat {
+    background-image: url(assets/ai-bg.webp);
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+
+}
+
+.animation-sequence-container.with-chat {
+    display: none !important;
+}
+
+.animation-sequence-container.with-chat .png-sequence-ai-1 {
+    height: 30vw !important;
+}
+
+.chatbot-content.with-chat {
+    height: 100%;
+}
+
+.chatbot__box.with-chat {
+    height: 91.5%;
+}
+
+.chatbot__box.with-chat .chatbot__chat.incoming p {
+    background-color: transparent !important;
+    width: 100%;
+    max-width: 100%;
+    margin-top: .2em;
+    margin-bottom: .5em;
+    padding-top: .2em;
+    padding-left: .5em;
+    padding-right: .5em;
+    padding-bottom: .5em;
+}
+
+.chatbot-content.with-chat .chatbot__chat.outgoing{
+    margin-top: 4em !important;
+}
+/* ========== AR ========== */
+
+.ar-animation-sequence-container {
+    /*     background-color: pink; */
+    position: absolute;
+    /* top: 35%; */
+    /* top: -20px; */
+    top: 0;
+    left: 50%;
+    /* transform: translate(-50%, -50%); */
+    transform: translateX(-50%);
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.png-sequence-ar {
+    /*     background-color: lightblue */
+    position: absolute;
+    /* height: 340px;
+        width: 340px; */
+    width: 120vw;
+    height: 115vw;
+    max-height: 650px;
+    max-width: 650px;
+    /* margin-left: 5%; */
+    /* transform: scale(1.15); */
+    top: 37%;
+    transform: translatey(-50%);
+}
+
+.png-frame-ar {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.png-frame-ar img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+@keyframes popAnimation {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.pop-item {
+    animation: popAnimation .2s linear;
+}
+
+/* AR POPUP */
+.shop-now-popup {
+    background-image: url(assets/IVYBEARS\ AI\ ADA_9x16_Cover_FA.webp);
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    z-index: 9999;
+    transition: opacity 0.5s;
+}
+
+.close-popup {
+    background-color: #fff;
+    width: 15px;
+    height: 15px;
+    padding: .8em .7em .7em .8em !important;
+    border-radius: 50%;
+    cursor: pointer;
+    position: absolute;
+    top: 2%;
+    right: 2%;
+}
+
+.close-popup img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.shop-now-inner {
+    background-color: rgba(255, 255, 255, .9);
+    width: min(500px, 70%);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 20px;
+    padding: 1em 2em;
+    text-align: center;
+}
+
+.shop-now-inner .pink {
+    color: #FC008A;
+}
+
+.shop-now-inner .big-h3 {
+    font-weight: 800 !important;
+    font-size: 1.3em;
+}
+
+.shop-now-popup a {
+    position: absolute;
+    display: block;
+    width: min(300px, 60%);
+    left: 50%;
+    transform: translatex(-50%);
+    bottom: 10%;
+}
+
+.shop-now-popup a img {
+    width: 100%;
+    object-fit: contain;
+}
+
+.loading-container {
+    width: 90%;
+    /* background-color: #fff; */
+    text-align: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+}
+
+.loading-box {
+    background-color: rgba(255, 255, 255, .5);
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+#loading-bar {
+    height: 20px;
+    background-color: #EC008C !important;
+    transition: width 0.2s ease;
+}
+
+#loading-text {
+    color: #fff !important;
+    margin-top: 1em;
+    font-weight: 400 !important;
+}

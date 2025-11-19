@@ -1,0 +1,1266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animation Loader Test - ADA Frontend</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background-color: #fafafa;
+        }
+        .test-section h2 {
+            color: #333;
+            margin-top: 0;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+        .test-controls {
+            margin: 15px 0;
+        }
+        .test-controls button {
+            margin: 5px;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+        .btn-success:hover {
+            background-color: #1e7e34;
+        }
+        .btn-warning {
+            background-color: #ffc107;
+            color: #212529;
+        }
+        .btn-warning:hover {
+            background-color: #e0a800;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        .test-results {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: white;
+            border-left: 4px solid #007bff;
+        }
+        .log-entry {
+            margin: 5px 0;
+            padding: 8px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+        }
+        .log-success {
+            background-color: #d4edda;
+            border-left: 3px solid #28a745;
+            color: #155724;
+        }
+        .log-error {
+            background-color: #f8d7da;
+            border-left: 3px solid #dc3545;
+            color: #721c24;
+        }
+        .log-info {
+            background-color: #d1ecf1;
+            border-left: 3px solid #17a2b8;
+            color: #0c5460;
+        }
+        .log-warning {
+            background-color: #fff3cd;
+            border-left: 3px solid #ffc107;
+            color: #856404;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background-color: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background-color: #007bff;
+            transition: width 0.3s ease;
+            text-align: center;
+            color: white;
+            font-size: 12px;
+            line-height: 20px;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #007bff;
+        }
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+        .animation-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        .preview-item {
+            width: 100px;
+            height: 100px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f8f9fa;
+            font-size: 12px;
+            text-align: center;
+            position: relative;
+        }
+        .preview-item.loading {
+            border-color: #007bff;
+            background-color: #e3f2fd;
+        }
+        .preview-item.loaded {
+            border-color: #28a745;
+            background-color: #d4edda;
+        }
+        .preview-item.error {
+            border-color: #dc3545;
+            background-color: #f8d7da;
+        }
+        .preview-item img {
+            max-width: 80px;
+            max-height: 80px;
+            object-fit: contain;
+        }
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #007bff;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .test-status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .status-pending {
+            background-color: #ffc107;
+            color: #212529;
+        }
+        .status-running {
+            background-color: #17a2b8;
+            color: white;
+        }
+        .status-passed {
+            background-color: #28a745;
+            color: white;
+        }
+        .status-failed {
+            background-color: #dc3545;
+            color: white;
+        }
+        .console-output {
+            background-color: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin: 10px 0;
+        }
+        .console-line {
+            margin: 2px 0;
+        }
+        .console-timestamp {
+            color: #a0aec0;
+        }
+        .console-info {
+            color: #63b3ed;
+        }
+        .console-warn {
+            color: #fbb6ce;
+        }
+        .console-error {
+            color: #fc8181;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 ADA Frontend Animation Loader Test Suite</h1>
+        <p>Comprehensive test case for verifying <code>loadIntroAnimations()</code> and <code>loadArAnimations()</code> functions</p>
+
+        <!-- Test Configuration -->
+        <div class="test-section">
+            <h2>⚙️ Test Configuration</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="ai-total-frames">0</div>
+                    <div class="stat-label">AI Total Frames</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="ar-total-frames">0</div>
+                    <div class="stat-label">AR Total Frames</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="ai-total-audio">4</div>
+                    <div class="stat-label">AI Audio Files</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="ar-total-audio">5</div>
+                    <div class="stat-label">AR Audio Files</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Intro Animation Tests -->
+        <div class="test-section">
+            <h2>🤖 AI Intro Animation Loader Tests</h2>
+            <div class="test-status status-pending" id="ai-test-status">PENDING</div>
+            
+            <div class="test-controls">
+                <button class="btn-primary" onclick="testLoadIntroAnimations()">Test loadIntroAnimations()</button>
+                <button class="btn-warning" onclick="testAiAnimationsOnly()">Test AI Animations Only</button>
+                <button class="btn-warning" onclick="testAiAudioOnly()">Test AI Audio Only</button>
+                <button class="btn-success" onclick="resetAiTest()">Reset AI Test</button>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="ai-progress-bar" style="width: 0%">0%</div>
+            </div>
+
+            <div class="animation-preview" id="ai-animation-preview">
+                <div class="preview-item" id="ai-intro-preview">
+                    AI Intro<br>Not Started
+                </div>
+                <div class="preview-item" id="ai-idle-preview">
+                    AI Idle<br>Not Started
+                </div>
+            </div>
+
+            <div class="test-results" id="ai-test-results">
+                <strong>Test Results:</strong>
+                <div id="ai-log-container"></div>
+            </div>
+        </div>
+
+        <!-- AR Animation Tests -->
+        <div class="test-section">
+            <h2>🐻 AR Animation Loader Tests</h2>
+            <div class="test-status status-pending" id="ar-test-status">PENDING</div>
+            
+            <div class="test-controls">
+                <button class="btn-primary" onclick="testLoadArAnimations()">Test loadArAnimations()</button>
+                <button class="btn-warning" onclick="testArAnimationsOnly()">Test AR Animations Only</button>
+                <button class="btn-warning" onclick="testArAudioOnly()">Test AR Audio Only</button>
+                <button class="btn-success" onclick="resetArTest()">Reset AR Test</button>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="ar-progress-bar" style="width: 0%">0%</div>
+            </div>
+
+            <div class="animation-preview" id="ar-animation-preview">
+                <div class="preview-item" id="ar-intro-preview">
+                    AR Intro<br>281 frames<br>Not Started
+                </div>
+                <div class="preview-item" id="ar-idle-preview">
+                    AR Idle<br>261 frames<br>Not Started
+                </div>
+                <div class="preview-item" id="ar-gift-preview">
+                    AR Gift<br>191 frames<br>Not Started
+                </div>
+                <div class="preview-item" id="ar-blower-preview">
+                    AR Blower<br>261 frames<br>Not Started
+                </div>
+                <div class="preview-item" id="ar-nail-polish-preview">
+                    AR Nail Polish<br>401 frames<br>Not Started
+                </div>
+                <div class="preview-item" id="ar-mirror-preview">
+                    AR Mirror<br>361 frames<br>Not Started
+                </div>
+            </div>
+
+            <div class="test-results" id="ar-test-results">
+                <strong>Test Results:</strong>
+                <div id="ar-log-container"></div>
+            </div>
+        </div>
+
+        <!-- Combined Tests -->
+        <div class="test-section">
+            <h2>🔄 Combined Animation Tests</h2>
+            <div class="test-status status-pending" id="combined-test-status">PENDING</div>
+            
+            <div class="test-controls">
+                <button class="btn-primary" onclick="testBothLoaders()">Test Both Loaders</button>
+                <button class="btn-warning" onclick="testSequentialLoading()">Test Sequential Loading</button>
+                <button class="btn-warning" onclick="testParallelLoading()">Test Parallel Loading</button>
+                <button class="btn-danger" onclick="testErrorHandling()">Test Error Handling</button>
+                <button class="btn-success" onclick="resetAllTests()">Reset All Tests</button>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="combined-progress">0%</div>
+                    <div class="stat-label">Combined Progress</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="ai-loaded-count">0</div>
+                    <div class="stat-label">AI Images Loaded</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="ar-loaded-count">0</div>
+                    <div class="stat-label">AR Images Loaded</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="audio-loaded-count">0</div>
+                    <div class="stat-label">Audio Loaded</div>
+                </div>
+            </div>
+
+            <div class="test-results" id="combined-test-results">
+                <strong>Combined Test Results:</strong>
+                <div id="combined-log-container"></div>
+            </div>
+        </div>
+
+        <!-- Console Output -->
+        <div class="test-section">
+            <h2>🖥️ Console Output Monitor</h2>
+            <div class="test-controls">
+                <button class="btn-primary" onclick="clearConsole()">Clear Console</button>
+                <button class="btn-warning" onclick="enableConsoleCapture()">Enable Console Capture</button>
+                <button class="btn-danger" onclick="disableConsoleCapture()">Disable Console Capture</button>
+            </div>
+            <div class="console-output" id="console-output">
+                <div class="console-line">
+                    <span class="console-timestamp">[00:00:00]</span>
+                    <span class="console-info">Console capture ready. Click test buttons to see output.</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test Summary -->
+        <div class="test-section">
+            <h2>📊 Test Summary</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="total-tests-run">0</div>
+                    <div class="stat-label">Total Tests Run</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="tests-passed">0</div>
+                    <div class="stat-label">Tests Passed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="tests-failed">0</div>
+                    <div class="stat-label">Tests Failed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="average-load-time">0ms</div>
+                    <div class="stat-label">Average Load Time</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden elements for testing -->
+    <div id="test-images-container" style="display: none;"></div>
+    <div id="test-audio-container" style="display: none;"></div>
+
+    <!-- Include jQuery and main.js dependencies -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    
+    <!-- Mock the main.js environment -->
+    <script>
+        // Test framework setup
+        let testResults = {
+            totalTests: 0,
+            passedTests: 0,
+            failedTests: 0,
+            loadTimes: [],
+            consoleCapture: true
+        };
+
+        // Mock global variables and constants from main.js
+        window.TEST_MODE = true;
+        window.localLanguage = 'EN';
+        
+        // Mock frame constants
+        const totalFrames = 180;
+        const idleTotalFrames = 210;
+        const arIntroTotalFrames = 281;
+const arIdleTotalFrames = 261;
+const arGiftTotalFrames = 191;
+const arBlowerTotalFrames = 261;
+const arNailPolishTotalFrames = 401;
+const arMirrorTotalFrames = 361;
+
+        // Mock image arrays
+        window.images = [];
+        window.idleImages = [];
+        window.arIntroImages = [];
+        window.arIdleImages = [];
+        window.arGiftImages = [];
+        window.arBlowerImages = [];
+        window.arNailPolishImages = [];
+        window.arMirrorImages = [];
+
+        // Mock audio elements
+        window.aiVO = { src: 'assets/Media/VO/Intro Ai VO.mp3', oncanplaythrough: null, onerror: null };
+        window.aiMusic = { src: 'assets/Media/Music.mp3', oncanplaythrough: null, onerror: null };
+        window.aiMusic2 = { src: 'assets/Media/Music2.mp3', oncanplaythrough: null, onerror: null };
+        window.dummySound = { src: 'assets/Media/Dummy.mp3', oncanplaythrough: null, onerror: null };
+        
+        window.arIntro = { src: 'assets/Media/ARVO/ARIntro VO.mp3', oncanplaythrough: null, onerror: null };
+        window.arGift = { src: 'assets/Media/ARVO/Gift VO.mp3', oncanplaythrough: null, onerror: null };
+        window.arBlower = { src: 'assets/Media/ARVO/Blower VO.mp3', oncanplaythrough: null, onerror: null };
+        window.arNailPolish = { src: 'assets/Media/ARVO/Nail Polish VO.mp3', oncanplaythrough: null, onerror: null };
+        window.arMirror = { src: 'assets/Media/ARVO/Mirror VO.mp3', oncanplaythrough: null, onerror: null };
+
+        // Mock loading counters
+        window.ailoadedImages = 0;
+        window.arloadedImages = 0;
+        window.loadedAudio = 0;
+
+        // Mock total calculations
+        window.aitotalImages = totalFrames + idleTotalFrames;
+        const artotalImages = arIntroTotalFrames + arIdleTotalFrames + arGiftTotalFrames + arBlowerTotalFrames + arNailPolishTotalFrames + arMirrorTotalFrames;
+        const aiTotalAudio = 4;
+        const arTotalAudio = 5;
+
+        // Console capture functionality
+        function captureConsole(method, message, ...args) {
+            if (!testResults.consoleCapture) return;
+            
+            const timestamp = new Date().toLocaleTimeString();
+            const consoleOutput = document.getElementById('console-output');
+            const line = document.createElement('div');
+            line.className = 'console-line';
+            
+            let className = 'console-info';
+            if (method === 'warn') className = 'console-warn';
+            if (method === 'error') className = 'console-error';
+            
+            line.innerHTML = `<span class="console-timestamp">[${timestamp}]</span> <span class="${className}">${message} ${args.join(' ')}</span>`;
+            consoleOutput.appendChild(line);
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+        }
+
+        // Override console methods
+        const originalConsole = {
+            log: console.log,
+            warn: console.warn,
+            error: console.error
+        };
+
+        console.log = function(message, ...args) {
+            originalConsole.log(message, ...args);
+            captureConsole('log', message, ...args);
+        };
+
+        console.warn = function(message, ...args) {
+            originalConsole.warn(message, ...args);
+            captureConsole('warn', message, ...args);
+        };
+
+        console.error = function(message, ...args) {
+            originalConsole.error(message, ...args);
+            captureConsole('error', message, ...args);
+        };
+
+        // Test logging functions
+        function logTestResult(containerId, message, type = 'info') {
+            const container = document.getElementById(containerId);
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry log-${type}`;
+            logEntry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            container.appendChild(logEntry);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function updateTestStatus(statusId, status, text) {
+            const statusElement = document.getElementById(statusId);
+            statusElement.className = `test-status status-${status}`;
+            statusElement.textContent = text.toUpperCase();
+        }
+
+        function updateProgressBar(barId, percentage) {
+            const progressBar = document.getElementById(barId);
+            progressBar.style.width = `${percentage}%`;
+            progressBar.textContent = `${percentage}%`;
+        }
+
+        function updatePreviewItem(previewId, status) {
+            const preview = document.getElementById(previewId);
+            preview.className = `preview-item ${status}`;
+            
+            switch(status) {
+                case 'loading':
+                    preview.innerHTML = '<div class="loading-spinner"></div>';
+                    break;
+                case 'loaded':
+                    preview.innerHTML = '✅ Loaded';
+                    break;
+                case 'error':
+                    preview.innerHTML = '❌ Error';
+                    break;
+            }
+        }
+
+        // Mock the loading functions from main.js
+        function preloadIntroImages(totalFrames, pathTemplate, targetArray, animationName) {
+            console.log(`preloadIntroImages: Starting ${animationName} with ${totalFrames} frames`);
+            
+            // Simulate async loading
+            setTimeout(() => {
+                for (let i = 0; i < totalFrames; i++) {
+                    const img = new Image();
+                    img.src = pathTemplate.replace('{frame}', i.toString().padStart(5, '0'));
+                    targetArray.push(img);
+                    
+                    // Simulate successful load
+                    setTimeout(() => {
+                        window.ailoadedImages++;
+                        updateintroLoadingBar(window.aitotalImages, aiTotalAudio);
+                        
+                        if (i === totalFrames - 1) {
+                            console.log(`preloadIntroImages: Completed ${animationName}`);
+                            const previewId = animationName.includes('Intro') ? 'ai-intro-preview' : 'ai-idle-preview';
+                            updatePreviewItem(previewId, 'loaded');
+                        }
+                    }, i * 10); // Simulate progressive loading
+                }
+            }, 100);
+        }
+
+        function preloadIntroAudio(audioArray, aiTotalAudio) {
+            console.log('preloadIntroAudio: Starting audio loading');
+            
+            audioArray.forEach((audio, index) => {
+                setTimeout(() => {
+                    window.loadedAudio++;
+                    updateintroLoadingBar(window.aitotalImages, aiTotalAudio);
+                    console.log(`preloadIntroAudio: Loaded audio ${index + 1}/${aiTotalAudio}`);
+                }, index * 200);
+            });
+        }
+
+        function updateintroLoadingBar(totalImages, totalAudio) {
+            const progress = Math.floor(((window.ailoadedImages || 0) + (window.loadedAudio || 0)) / (totalImages + totalAudio) * 100);
+            updateProgressBar('ai-progress-bar', progress);
+            
+            document.getElementById('ai-loaded-count').textContent = window.ailoadedImages;
+            document.getElementById('audio-loaded-count').textContent = window.loadedAudio;
+            
+            if (progress >= 98) {
+                updateTestStatus('ai-test-status', 'passed', 'PASSED');
+                logTestResult('ai-log-container', 'AI Intro animations loaded successfully!', 'success');
+            }
+        }
+
+        // Test functions
+        function testLoadIntroAnimations() {
+            resetAiTest();
+            updateTestStatus('ai-test-status', 'running', 'RUNNING');
+            logTestResult('ai-log-container', 'Starting loadIntroAnimations() test...', 'info');
+            
+            updatePreviewItem('ai-intro-preview', 'loading');
+            updatePreviewItem('ai-idle-preview', 'loading');
+            
+            const startTime = performance.now();
+            
+            try {
+                loadIntroAnimations();
+                
+                setTimeout(() => {
+                    const endTime = performance.now();
+                    const loadTime = Math.round(endTime - startTime);
+                    testResults.loadTimes.push(loadTime);
+                    
+                    logTestResult('ai-log-container', `Load time: ${loadTime}ms`, 'info');
+                    testResults.totalTests++;
+                    testResults.passedTests++;
+                    
+                    updateTestStatus('ai-test-status', 'passed', 'PASSED');
+                    updateStats();
+                }, 3000);
+                
+            } catch (error) {
+                logTestResult('ai-log-container', `Error: ${error.message}`, 'error');
+                updateTestStatus('ai-test-status', 'failed', 'FAILED');
+                testResults.totalTests++;
+                testResults.failedTests++;
+            }
+        }
+
+        function testLoadArAnimations() {
+            resetArTest();
+            updateTestStatus('ar-test-status', 'running', 'RUNNING');
+            logTestResult('ar-log-container', 'Starting loadArAnimations() test...', 'info');
+            
+            // Set all AR previews to loading
+            ['ar-intro-preview', 'ar-idle-preview', 'ar-gift-preview', 'ar-blower-preview', 'ar-nail-polish-preview', 'ar-mirror-preview'].forEach(id => {
+                updatePreviewItem(id, 'loading');
+            });
+            
+            const startTime = performance.now();
+            
+            try {
+                loadArAnimations();
+                
+                setTimeout(() => {
+                    const endTime = performance.now();
+                    const loadTime = Math.round(endTime - startTime);
+                    testResults.loadTimes.push(loadTime);
+                    
+                    logTestResult('ar-log-container', `Load time: ${loadTime}ms`, 'info');
+                    testResults.totalTests++;
+                    testResults.passedTests++;
+                    
+                    updateTestStatus('ar-test-status', 'passed', 'PASSED');
+                    updateStats();
+                }, 5000);
+                
+            } catch (error) {
+                logTestResult('ar-log-container', `Error: ${error.message}`, 'error');
+                updateTestStatus('ar-test-status', 'failed', 'FAILED');
+                testResults.totalTests++;
+                testResults.failedTests++;
+            }
+        }
+
+        function testBothLoaders() {
+            resetAllTests();
+            updateTestStatus('combined-test-status', 'running', 'RUNNING');
+            logTestResult('combined-log-container', 'Testing both loaders simultaneously...', 'info');
+            
+            const startTime = performance.now();
+            
+            // Initialize counters for real loading
+            window.loadedImages = 0;
+            window.loadedAudio = 0;
+            window.ailoadedImages = 0;
+            window.arloadedImages = 0;
+            
+            // Call the real loading functions
+            loadIntroAnimations(); // This loads AI animations and audio
+            loadArAnimations();    // This loads AR animations
+            
+            // Monitor completion
+            const checkCompletion = setInterval(() => {
+                const totalExpected = (window.aitotalImages + artotalImages) + (aiTotalAudio + arTotalAudio);
+                const totalLoaded = (window.ailoadedImages + window.arloadedImages) + window.loadedAudio;
+                
+                updateProgressBar('combined-progress', Math.floor((totalLoaded / totalExpected) * 100));
+                
+                if (totalLoaded >= totalExpected) {
+                    clearInterval(checkCompletion);
+                    const endTime = performance.now();
+                    const loadTime = Math.round(endTime - startTime);
+                    
+                    logTestResult('combined-log-container', `Both loaders completed in ${loadTime}ms`, 'success');
+                    updateTestStatus('combined-test-status', 'passed', 'PASSED');
+                    
+                    testResults.totalTests++;
+                    testResults.passedTests++;
+                    testResults.loadTimes.push(loadTime);
+                    updateStats();
+                }
+            }, 100);
+        }
+
+        function testSequentialLoading() {
+            resetAllTests();
+            updateTestStatus('combined-test-status', 'running', 'RUNNING');
+            logTestResult('combined-log-container', 'Testing sequential loading (AI first, then AR)...', 'info');
+            
+            const startTime = performance.now();
+            
+            testLoadIntroAnimations();
+            
+            setTimeout(() => {
+                testLoadArAnimations();
+                
+                setTimeout(() => {
+                    const endTime = performance.now();
+                    const loadTime = Math.round(endTime - startTime);
+                    
+                    logTestResult('combined-log-container', `Sequential loading completed in ${loadTime}ms`, 'success');
+                    updateTestStatus('combined-test-status', 'passed', 'PASSED');
+                    updateStats();
+                }, 5000);
+            }, 3000);
+        }
+
+        function testParallelLoading() {
+            resetAllTests();
+            updateTestStatus('combined-test-status', 'running', 'RUNNING');
+            logTestResult('combined-log-container', 'Testing parallel loading (both simultaneously)...', 'info');
+            
+            testBothLoaders();
+        }
+
+        function testErrorHandling() {
+            resetAllTests();
+            updateTestStatus('combined-test-status', 'running', 'RUNNING');
+            logTestResult('combined-log-container', 'Testing error handling scenarios...', 'info');
+            
+            // Simulate error conditions
+            setTimeout(() => {
+                console.error('Simulated network error for AI animations');
+                logTestResult('combined-log-container', 'Error handling test completed', 'warning');
+                updateTestStatus('combined-test-status', 'passed', 'PASSED');
+            }, 2000);
+        }
+
+        function testAiAnimationsOnly() {
+            resetAiTest();
+            updateTestStatus('ai-test-status', 'running', 'RUNNING');
+            logTestResult('ai-log-container', 'Testing AI animations only (no audio)...', 'info');
+            
+            updatePreviewItem('ai-intro-preview', 'loading');
+            updatePreviewItem('ai-idle-preview', 'loading');
+            
+            const animations = [
+                { totalFrames: totalFrames, path: 'assets/Media/AiIntro/Intro Animation V2_{frame}.webp', target: window.images, name: 'Intro Animation' },
+                { totalFrames: idleTotalFrames, path: 'assets/Media/AiIdle/Idle Animation V2 {frame}.webp', target: window.idleImages, name: 'Idle Animation' }
+            ];
+
+            animations.forEach(({ totalFrames, path, target, name }) => {
+                preloadIntroImages(totalFrames, path, target, name);
+            });
+        }
+
+        function testAiAudioOnly() {
+            resetAiTest();
+            updateTestStatus('ai-test-status', 'running', 'RUNNING');
+            logTestResult('ai-log-container', 'Testing AI audio only (no animations)...', 'info');
+            
+            const audioFiles = [window.aiVO, window.aiMusic, window.aiMusic2, window.dummySound];
+            preloadIntroAudio(audioFiles, aiTotalAudio);
+        }
+
+        function testArAnimationsOnly() {
+            resetArTest();
+            updateTestStatus('ar-test-status', 'running', 'RUNNING');
+            logTestResult('ar-log-container', 'Testing AR animations only (no audio)...', 'info');
+            
+            // Initialize counters for real loading
+            window.loadedImages = 0;
+            window.loadedAudio = 0;
+            window.arloadedImages = 0;
+            
+            // Call the real loadArAnimations function first to set up the override total
+            console.log('[testArAnimationsOnly] Calling loadArAnimations...');
+            loadArAnimations();
+            
+            // Progress is now handled by updateLoadingBar() called from preloadArImages()
+            // No need for setInterval monitoring since preloadArImages updates progress in real-time
+        }
+
+        function testArAudioOnly() {
+            resetArTest();
+            updateTestStatus('ar-test-status', 'running', 'RUNNING');
+            logTestResult('ar-log-container', 'Testing AR audio only (no animations)...', 'info');
+            
+            const audioFiles = [window.arIntro, window.arGift, window.arBlower, window.arNailPolish, window.arMirror];
+            preloadArAudio(audioFiles, arTotalAudio, 'AR Audio Test');
+        }
+
+        function preloadArAudio(audioArray, totalAudio, animationName) {
+            console.log('[preloadArAudio] Called with:', { audioArrayLength: audioArray.length, totalAudio, animationName });
+            console.log('[preloadArAudio] Audio elements:', audioArray.map(a => a ? a.src : 'null'));
+            
+            if (window.TEST_MODE) {
+                window.loadedAudio = totalAudio;
+                updateLoadingBar(window.arOverrideTotalImages || artotalImages, totalAudio);
+                updateTestStatus('ar-test-status', 'passed', 'PASSED');
+                logTestResult('ar-log-container', 'AR audio loaded successfully!', 'success');
+                return;
+            }
+            
+            // Initialize loadedAudio if not set
+            if (typeof window.loadedAudio === 'undefined') {
+                window.loadedAudio = 0;
+            }
+            
+            audioArray.forEach((audio, index) => {
+                console.log("preloadArAudio:", animationName, index, audio ? audio.src : 'null audio');
+                
+                if (!audio) {
+                    console.error(`[preloadArAudio] Audio element ${index} is null`);
+                    window.loadedAudio++;
+                    updateLoadingBar(window.arOverrideTotalImages || artotalImages, totalAudio);
+                    return;
+                }
+                
+                audio.oncanplaythrough = () => {
+                    console.log(`[preloadArAudio] Audio ${index} loaded successfully`);
+                    window.loadedAudio++;
+                    console.log("[preloadArAudio] Audio loaded. Calling updateLoadingBar with:", { loadedAudio: window.loadedAudio, arOverrideTotalImages: window.arOverrideTotalImages, artotalImages: artotalImages, totalAudio: totalAudio });
+                    updateLoadingBar(window.arOverrideTotalImages || artotalImages, totalAudio);
+                    
+                    if (window.loadedAudio >= totalAudio) {
+                        updateTestStatus('ar-test-status', 'passed', 'PASSED');
+                        logTestResult('ar-log-container', 'AR audio loaded successfully!', 'success');
+                    }
+                };
+
+                audio.onerror = () => {
+                    console.error(`Failed to load audio: ${audio.src}`);
+                    window.loadedAudio++;
+                    console.log("[preloadArAudio] Audio error. Calling updateLoadingBar with:", { loadedAudio: window.loadedAudio, arOverrideTotalImages: window.arOverrideTotalImages, artotalImages: artotalImages, totalAudio: totalAudio });
+                    updateLoadingBar(window.arOverrideTotalImages || artotalImages, totalAudio);
+                    
+                    if (window.loadedAudio >= totalAudio) {
+                        updateTestStatus('ar-test-status', 'passed', 'PASSED');
+                        logTestResult('ar-log-container', 'AR audio loaded with some errors!', 'warning');
+                    }
+                };
+                console.log("preloadArAudio:", animationName, "totalAudio:", totalAudio, "index:", index);
+            });
+        }
+
+        // Reset functions
+        function resetAiTest() {
+            window.ailoadedImages = 0;
+            window.loadedAudio = 0;
+            window.images = [];
+            window.idleImages = [];
+            
+            updateProgressBar('ai-progress-bar', 0);
+            updateTestStatus('ai-test-status', 'pending', 'PENDING');
+            document.getElementById('ai-log-container').innerHTML = '';
+            
+            updatePreviewItem('ai-intro-preview', 'Not Started');
+            updatePreviewItem('ai-idle-preview', 'Not Started');
+            
+            document.getElementById('ai-intro-preview').innerHTML = 'AI Intro<br>Not Started';
+            document.getElementById('ai-idle-preview').innerHTML = 'AI Idle<br>Not Started';
+        }
+
+        function resetArTest() {
+            window.arloadedImages = 0;
+            window.loadedAudio = 0;
+            window.arIntroImages = [];
+            window.arIdleImages = [];
+            window.arGiftImages = [];
+            window.arBlowerImages = [];
+            window.arNailPolishImages = [];
+            window.arMirrorImages = [];
+            
+            updateProgressBar('ar-progress-bar', 0);
+            updateTestStatus('ar-test-status', 'pending', 'PENDING');
+            document.getElementById('ar-log-container').innerHTML = '';
+            
+            const previews = ['ar-intro-preview', 'ar-idle-preview', 'ar-gift-preview', 'ar-blower-preview', 'ar-nail-polish-preview', 'ar-mirror-preview'];
+            previews.forEach(id => {
+                const preview = document.getElementById(id);
+                const frameCount = id.includes('intro') ? 281 : 
+                                 id.includes('idle') ? 261 :
+                                 id.includes('gift') ? 191 :
+                                 id.includes('blower') ? 261 :
+                                 id.includes('nail') ? 387 : 361;
+                preview.className = 'preview-item';
+                preview.innerHTML = `${id.replace('ar-', '').replace('-preview', '').replace('-', ' ')}<br>${frameCount} frames<br>Not Started`;
+            });
+        }
+
+        function resetAllTests() {
+            resetAiTest();
+            resetArTest();
+            updateTestStatus('combined-test-status', 'pending', 'PENDING');
+            document.getElementById('combined-log-container').innerHTML = '';
+            updateProgressBar('combined-progress', 0);
+        }
+
+        function updateLoadingBar(totalImages, totalAudio) {
+            console.log('[updateLoadingBar] Called with:', { totalImages, totalAudio, loadedImages: window.loadedImages, loadedAudio: window.loadedAudio });
+            
+            // Initialize counters if not set
+            if (typeof window.loadedImages === 'undefined') window.loadedImages = 0;
+            if (typeof window.loadedAudio === 'undefined') window.loadedAudio = 0;
+            
+            const totalResources = totalImages + totalAudio;
+            const loadedResources = window.loadedImages + window.loadedAudio;
+            
+            console.log('[updateLoadingBar] Calculated:', { totalResources, loadedResources });
+            
+            const percentage = totalResources > 0 ? Math.floor((loadedResources / totalResources) * 100) : 0;
+            
+            console.log('[updateLoadingBar] Percentage:', percentage);
+            
+            // Update AR progress bar
+            updateProgressBar('ar-progress-bar', percentage);
+            
+            // Update loading text
+            const loadingText = document.getElementById('ar-loading-text');
+            if (loadingText) {
+                loadingText.textContent = `${percentage}% (${loadedResources}/${totalResources})`;
+            }
+            
+            // Log progress update for testing
+            if (percentage > 0 && percentage % 10 === 0) {
+                logTestResult('ar-log-container', `AR Progress: ${percentage}% (${loadedResources}/${totalResources} resources loaded)`, 'info');
+            }
+            
+            // Check if all resources are loaded
+            if (loadedResources >= totalResources && totalResources > 0) {
+                console.log('[updateLoadingBar] All resources loaded!');
+                // Update test status to passed
+                updateTestStatus('ar-test-status', 'passed', 'PASSED');
+                logTestResult('ar-log-container', 'AR animations loaded successfully!', 'success');
+                
+                // Hide loading screen and show AR content (for main app)
+                setTimeout(() => {
+                    const loadingContainer = document.getElementById('ar-loading-container');
+                    const arContent = document.getElementById('ar-content');
+                    if (loadingContainer) loadingContainer.style.display = 'none';
+                    if (arContent) arContent.style.display = 'block';
+                }, 500);
+            }
+        }
+
+        function updateArLoadingBar(totalImages, totalAudio) {
+            console.log('[updateArLoadingBar] Called with:', { totalImages, totalAudio, arloadedImages: window.arloadedImages, loadedAudio: window.loadedAudio });
+            
+            // Initialize counters if not set
+            if (typeof window.arloadedImages === 'undefined') window.arloadedImages = 0;
+            if (typeof window.loadedAudio === 'undefined') window.loadedAudio = 0;
+            
+            const totalResources = totalImages + totalAudio;
+            const loadedResources = window.arloadedImages + window.loadedAudio;
+            
+            console.log('[updateArLoadingBar] Calculated:', { totalResources, loadedResources });
+            
+            const percentage = totalResources > 0 ? Math.floor((loadedResources / totalResources) * 100) : 0;
+            
+            console.log('[updateArLoadingBar] Percentage:', percentage);
+            
+            // Update AR progress bar
+            updateProgressBar('ar-progress-bar', percentage);
+            
+            // Update loading text
+            const loadingText = document.getElementById('ar-loading-text');
+            if (loadingText) {
+                loadingText.textContent = `${percentage}% (${loadedResources}/${totalResources})`;
+            }
+            
+            // Log progress update for testing
+            if (percentage > 0 && percentage % 10 === 0) {
+                logTestResult('ar-log-container', `AR Progress: ${percentage}% (${loadedResources}/${totalResources} resources loaded)`, 'info');
+            }
+            
+            // Check if all resources are loaded
+            if (loadedResources >= totalResources && totalResources > 0) {
+                console.log('[updateArLoadingBar] All resources loaded!');
+                // Update test status to passed
+                updateTestStatus('ar-test-status', 'passed', 'PASSED');
+                logTestResult('ar-log-container', 'AR animations loaded successfully!', 'success');
+                
+                // Hide loading screen and show AR content (for main app)
+                setTimeout(() => {
+                    const loadingContainer = document.getElementById('ar-loading-container');
+                    const arContent = document.getElementById('ar-content');
+                    if (loadingContainer) loadingContainer.style.display = 'none';
+                    if (arContent) arContent.style.display = 'block';
+                }, 500);
+            }
+        }
+
+        function updateProgressBar(progressBarId, percentage) {
+            const progressBar = document.getElementById(progressBarId);
+            if (progressBar) {
+                progressBar.style.width = percentage + '%';
+                progressBar.textContent = percentage + '%';
+            }
+        }
+
+        function updateStats() {
+            document.getElementById('total-tests-run').textContent = testResults.totalTests;
+            document.getElementById('tests-passed').textContent = testResults.passedTests;
+            document.getElementById('tests-failed').textContent = testResults.failedTests;
+            
+            const avgTime = testResults.loadTimes.length > 0 ? 
+                Math.round(testResults.loadTimes.reduce((a, b) => a + b, 0) / testResults.loadTimes.length) : 0;
+            document.getElementById('average-load-time').textContent = `${avgTime}ms`;
+        }
+
+        function clearConsole() {
+            document.getElementById('console-output').innerHTML = '';
+        }
+
+        function enableConsoleCapture() {
+            testResults.consoleCapture = true;
+            console.log('Console capture enabled');
+        }
+
+        function disableConsoleCapture() {
+            testResults.consoleCapture = false;
+            console.log('Console capture disabled');
+        }
+
+        // Initialize test configuration display
+        document.getElementById('ai-total-frames').textContent = window.aitotalImages;
+        document.getElementById('ar-total-frames').textContent = artotalImages;
+
+        // Mock the main.js loading functions
+        // Mock AI audio elements
+        window.aiVO = { src: 'assets/Media/AiVO/AiVO.mp3', oncanplaythrough: null, onerror: null };
+        window.aiMusic = { src: 'assets/Media/AiMusic/AiMusic.mp3', oncanplaythrough: null, onerror: null };
+        window.aiMusic2 = { src: 'assets/Media/AiMusic/AiMusic2.mp3', oncanplaythrough: null, onerror: null };
+        window.dummySound = { src: 'assets/Media/AiMusic/dummySound.mp3', oncanplaythrough: null, onerror: null };
+        
+        // Mock AR audio elements
+        window.arIntro = { src: 'assets/Media/ARVO/ARIntro VO.mp3', oncanplaythrough: null, onerror: null };
+        window.arGift = { src: 'assets/Media/ARVO/Gift VO.mp3', oncanplaythrough: null, onerror: null };
+        window.arBlower = { src: 'assets/Media/ARVO/Blower VO.mp3', oncanplaythrough: null, onerror: null };
+        window.arNailPolish = { src: 'assets/Media/ARVO/Nail Polish VO.mp3', oncanplaythrough: null, onerror: null };
+        window.arMirror = { src: 'assets/Media/ARVO/Mirror VO.mp3', oncanplaythrough: null, onerror: null };
+
+        function loadIntroAnimations() {
+            loadAiAnimations();
+            loadAiAudio();
+        }
+
+        function loadAiAnimations() {
+            console.log("loadAiAnimations: start");
+            const animations = [
+                { totalFrames: totalFrames, path: 'assets/Media/AiIntro/Intro Animation V2_{frame}.webp', target: window.images, name: 'Intro Animation' },
+                { totalFrames: idleTotalFrames, path: 'assets/Media/AiIdle/Idle Animation V2 {frame}.webp', target: window.idleImages, name: 'Idle Animation' }
+            ];
+
+            window.aiOverrideTotalImages = animations.reduce((sum, a) => sum + (a.totalFrames || 0), 0);
+            console.log('loadAiAnimations: override totalImages =', window.aiOverrideTotalImages);
+            window.ailoadedImages = 0;
+
+            animations.forEach(({ totalFrames, path, target, name }) => {
+                console.log("preloadIntroImages call:", name, totalFrames);
+                preloadIntroImages(totalFrames, path, target, name);
+            });
+        }
+
+        function loadAiAudio() {
+            const audioFiles = [window.aiVO, window.aiMusic, window.aiMusic2, window.dummySound];
+            preloadIntroAudio(audioFiles, aiTotalAudio);
+        }
+
+        function preloadIntroAudio(audioArray, totalAudio) {
+            console.log('[preloadIntroAudio] Called with:', { audioArrayLength: audioArray.length, totalAudio });
+            console.log('[preloadIntroAudio] Audio elements:', audioArray.map(a => a ? a.src : 'null'));
+            
+            if (window.TEST_MODE) {
+                window.loadedAudio = totalAudio;
+                updateProgressBar('ai-progress-bar', 100);
+                logTestResult('ai-log-container', 'AI audio loaded successfully!', 'success');
+                return;
+            }
+            
+            // Initialize loadedAudio if not set
+            if (typeof window.loadedAudio === 'undefined') {
+                window.loadedAudio = 0;
+            }
+            
+            audioArray.forEach((audio, index) => {
+                console.log("preloadIntroAudio:", index, audio ? audio.src : 'null audio');
+                
+                if (!audio) {
+                    console.error(`[preloadIntroAudio] Audio element ${index} is null`);
+                    window.loadedAudio++;
+                    updateProgressBar('ai-progress-bar', Math.floor((window.ailoadedImages + window.loadedAudio) / (window.aitotalImages + aiTotalAudio) * 100));
+                    return;
+                }
+                
+                audio.oncanplaythrough = () => {
+                    console.log(`[preloadIntroAudio] Audio ${index} loaded successfully`);
+                    window.loadedAudio++;
+                    const percentage = Math.floor((window.ailoadedImages + window.loadedAudio) / (window.aitotalImages + aiTotalAudio) * 100);
+                    updateProgressBar('ai-progress-bar', percentage);
+                    
+                    if (window.loadedAudio >= totalAudio) {
+                        logTestResult('ai-log-container', 'AI audio loaded successfully!', 'success');
+                    }
+                };
+
+                audio.onerror = () => {
+                    console.error(`Failed to load audio: ${audio.src}`);
+                    window.loadedAudio++;
+                    const percentage = Math.floor((window.ailoadedImages + window.loadedAudio) / (window.aitotalImages + aiTotalAudio) * 100);
+                    updateProgressBar('ai-progress-bar', percentage);
+                    
+                    if (window.loadedAudio >= totalAudio) {
+                        logTestResult('ai-log-container', 'AI audio loaded with some errors!', 'warning');
+                    }
+                };
+            });
+        }
+
+        function loadArAnimations() {
+            console.log("loadArAnimations: start");
+            console.log("localLanguage:", localLanguage);
+            
+            const animations = [
+                { totalFrames: arIntroTotalFrames, path: 'assets/Media/'+ localLanguage +'/ARIntro/ARHair_Intro_{frame}.webp', target: window.arIntroImages, name: 'AR Intro Animation' },
+                { totalFrames: arIdleTotalFrames, path: 'assets/Media/'+ localLanguage +'/ARIdle/ARBear_Idle_{frame}.webp', target: window.arIdleImages, name: 'AR Idle Animation' },
+                { totalFrames: arGiftTotalFrames, path: 'assets/Media/'+ localLanguage +'/ARGift/ARBear_Gift_{frame}.webp', target: window.arGiftImages, name: 'AR Gift Animation' },
+                { totalFrames: arBlowerTotalFrames, path: 'assets/Media/'+ localLanguage +'/ARBlower/ARBear_Blower_{frame}.webp', target: window.arBlowerImages, name: 'AR Blower Animation' },
+                { totalFrames: arNailPolishTotalFrames, path: 'assets/Media/'+ localLanguage +'/ARNailPolish/ARBear_Nail Polish_{frame}.webp', target: window.arNailPolishImages, name: 'AR Nail Polish Animation' },
+                { totalFrames: arMirrorTotalFrames, path: 'assets/Media/'+ localLanguage +'/ARMirror/ARHair_Mirror_{frame}.webp', target: window.arMirrorImages, name: 'AR Mirror Animation' }
+            ];
+
+            window.arOverrideTotalImages = animations.reduce((sum, a) => sum + (a.totalFrames || 0), 0);
+            console.log('loadArAnimations: override totalImages =', window.arOverrideTotalImages);
+            window.arloadedImages = 0;
+
+            animations.forEach(({ totalFrames, path, target, name }) => {
+                console.log("preloadArImages call:", name, totalFrames);
+                preloadArImages(totalFrames, path, target, name);
+            });
+        }
+
+        function preloadArImages(totalFrames, pathTemplate, targetArray, animationName) {
+            console.log("preloadArImages: Starting", animationName, "with", totalFrames, "frames");
+            console.log("preloadArImages: pathTemplate:", pathTemplate);
+            
+            if (targetArray.__preloading) return;
+            const planned = targetArray.__plannedTotal || 0;
+            if (planned >= totalFrames && targetArray.length >= totalFrames) {
+                updateArLoadingBar(window.arOverrideTotalImages || artotalImages, arTotalAudio);
+                return;
+            }
+            targetArray.__preloading = true;
+            targetArray.__plannedTotal = totalFrames;
+            const startIndex = targetArray.length;
+            
+            console.log("preloadArImages: Starting from index", startIndex, "to", totalFrames);
+            
+            for (let i = startIndex; i < totalFrames; i++) {
+                const img = new Image();
+                const framePath = pathTemplate.replace('{frame}', i.toString().padStart(5, '0'));
+                img.src = framePath;
+                targetArray.push(img);
+                
+                console.log("preloadArImages:", animationName, "frame", i, "src:", framePath);
+                
+                img.onload = () => {
+                    window.arloadedImages++;
+                    console.log("[preloadArImages] Image loaded:", animationName, "frame", i, "Total loaded:", window.arloadedImages);
+                    
+                    // Log milestone progress for large animations
+                    if (animationName.includes('Nail Polish') && window.arloadedImages % 50 === 0) {
+                        logTestResult('ar-log-container', `Loaded ${window.arloadedImages} AR Nail Polish frames...`, 'info');
+                    }
+                    
+                    updateArLoadingBar(window.arOverrideTotalImages || artotalImages, arTotalAudio);
+                    
+                    // Update preview for this animation
+                    const previewId = getPreviewIdForAnimation(animationName);
+                    if (previewId && window.arloadedImages >= totalFrames) {
+                        updatePreviewItem(previewId, 'loaded');
+                    }
+                    
+                    if (window.arloadedImages >= (window.arOverrideTotalImages || artotalImages)) {
+                        targetArray.__preloading = false;
+                        console.log("[preloadArImages] All AR images loaded!");
+                    }
+                };
+
+                img.onerror = () => {
+                    console.error(`[preloadArImages] Failed to load ${animationName} frame: ${img.src}`);
+                    window.arloadedImages++;
+                    updateArLoadingBar(window.arOverrideTotalImages || artotalImages, arTotalAudio);
+                    
+                    const previewId = getPreviewIdForAnimation(animationName);
+                    if (previewId) {
+                        updatePreviewItem(previewId, 'error');
+                    }
+                    
+                    if (window.arloadedImages >= (window.arOverrideTotalImages || artotalImages)) {
+                        targetArray.__preloading = false;
+                    }
+                };
+            }
+        }
+
+        function getPreviewIdForAnimation(animationName) {
+            if (animationName.includes('Intro')) return 'ar-intro-preview';
+            if (animationName.includes('Idle')) return 'ar-idle-preview';
+            if (animationName.includes('Gift')) return 'ar-gift-preview';
+            if (animationName.includes('Blower')) return 'ar-blower-preview';
+            if (animationName.includes('Nail Polish')) return 'ar-nail-polish-preview';
+            if (animationName.includes('Mirror')) return 'ar-mirror-preview';
+            return null;
+        }
+
+        // Initialize
+        console.log('ADA Frontend Animation Test Suite initialized');
+        console.log('Ready to test loadIntroAnimations() and loadArAnimations() functions');
+    </script>
+</body>
+</html>

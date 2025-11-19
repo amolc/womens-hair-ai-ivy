@@ -1,0 +1,104 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ivy Bears</title>
+    <link rel="stylesheet" href="style.css?v=1.0.6">
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.15.4/css/all.css"
+        integrity="sha384-rqn26AG5Pj86AF4SO72RK5fyefcQ/x32DNQfChxWvbXIyXFePlEktwD18fEz+kQU" crossorigin="anonymous">
+    <script defer src="https://pro.fontawesome.com/releases/v5.15.4/js/all.js"
+        integrity="sha384-8nTbev/iV1sg3ESYOAkRPRDMDa5s0sknqroAe9z4DiM+WDr1i/VKi5xLWsn87Car"
+        crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />
+    <link rel="stylesheet" type="text/css"
+        href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/addons/p5.sound.min.js"></script>
+</head>
+
+<body>
+    <div class="main-container">
+       
+        <p id="error-message" style="color: red;"></p>
+
+
+        <div class="ivybears-header">
+            
+            <img src="assets/ivybears-header.webp" class="name-title-2" alt="">
+        </div> 
+
+        
+
+        <div class="ai-chat with-chat">
+          
+
+            <div class="chatbot-content with-chat">
+                <ul class="chatbot__box with-chat">
+                    <li class="chatbot__chat incoming">
+                        <span><img src="https://cdn.shopify.com/s/files/1/0598/4544/3632/files/bear-chat.png?v=1731058568" class="ivybots-icon"></span> 
+                        <p translate="no" class="introtxt">Hi I'm Ada, your artificial health advisor. Ask me anything and I'll try to help you!</p>
+                            <div class="audio-toggle"> 
+                            <img class="sound-toggle off" src="assets/Sound off CTA.svg" alt="">
+                            <img class="sound-toggle on d-none" src="assets/Sound on CTA.svg" alt="">
+                            </div>
+                    </li>
+                </ul>
+                <div class="chatbot__input_box">
+                    <div class="chatbot__input_inner first-load">
+                        <div class="chatbot_inner_1">
+                            <div class="plus-icon">
+                                <img src="assets/plus 1.svg" alt="">
+                            </div>
+                            <div class="plus-content d-none">
+                                <input class="upload-image" type="file" id="upload-image" name="upload-image">
+                                <label class="upload-image-label" for="upload-image"></label>
+                            </div>
+                            <div class="text-container">
+                                <textarea class="chatbot__textarea" required></textarea>
+                                <div class="voice-timer d-none">
+                                    <p>Speaking...</p>
+                                    <p class="timer-seconds">0:00</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chatbot_inner_2">
+                            <div class="mic-container">
+                                <!-- <button class="startRecord on-bar"><img src="assets/Mic Icon 1.svg" alt=""></button>
+                                <button class="stopRecord on-bar d-none"><img src="assets/Mic Icon 1.svg" alt=""></button> -->
+                                <button class="startRecord on-bar"><img src="assets/mic-black.webp" alt=""></button>
+                                <button class="stopRecord on-bar d-none"><img src="assets/mic-black.webp"
+                                        alt=""></button>
+                            </div>
+                            <span id="send-btn" class="d-none material-symbols-outlined"><img
+                                    src="assets/send-icon-1.svg" alt=""></span>
+                        </div>
+
+                        <div class="mic-guide d-none">
+                            <p>Tap & hold <img src="assets/Mic Icon 1.svg" alt=""> button to speak</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            
+           
+        </div>
+    </div>
+
+    <div id="reloading-overlay">
+        <p></p>
+    </div>
+</body>
+
+</html>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+<script src="geo.js?v=1.0.4"></script>
+<script src="ai.js?v=1.0.4"></script>
+<script src="main.js?v=1.0.6"></script>
