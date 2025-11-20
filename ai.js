@@ -26,7 +26,7 @@ let transcriptLanguage = '';
 let voiceLanguage = '';
 let sessionId = null;
 let responseLang = 'en-US';
-let response_assist_name = 'Reg';
+let response_assist_name = 'Ada';
 let response_data = {};
 
 
@@ -178,12 +178,14 @@ const getChat = async (userMessage, assist_name, detectedLanguage, sessionId, in
       })
     });
 
+    console.log("chat url Response Status:", response.status);
     if (!response.ok) {
       throw new Error(`API Error: ${response.status}`);
     }
 
     return await response.json();
   } catch (error) {
+
     console.error("Error in getChat:", error);
     throw error; // Re-throw the error for generateResponse to catch
   }
@@ -216,6 +218,7 @@ const generateResponse = async (incomingChatLi) => {
 
   try {
     let assistantResponse;
+    console.log('userMessage ready for chatpayload:', userMessage);
     const data = await getChat(userMessage, assist_name, sessionLanguage, sessionId, inputType);
     console.log('Chat Response:', JSON.stringify(data, null, 2));
     console.log('[generateResponse] Detected language from backend:', data.detected_language);
