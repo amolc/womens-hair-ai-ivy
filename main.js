@@ -59,11 +59,15 @@ if (aiMusic2) {
     console.log("aiMusic2.tagName:", aiMusic2.tagName);
 }
 
+
+
 // Check if audio elements exist in DOM
 console.log("Checking DOM for audio elements:");
 console.log("document.getElementById('ai-vo'):", document.getElementById('ai-vo'));
 console.log("document.getElementById('ai-music'):", document.getElementById('ai-music'));
 console.log("document.getElementById('ai-music-2'):", document.getElementById('ai-music-2'));
+console.log("document.getElementById('pop-whole'):", document.getElementById('pop-whole'));
+
 
 // Test loading the audio files
 console.log("=== TESTING AUDIO FILE LOADING ===");
@@ -146,10 +150,11 @@ function onSound() {
     if (onIcon && offIcon) {
         onIcon.classList.remove('d-none');
         offIcon.classList.add('d-none');
-        if (aiMusic && aiMusic.paused) {
-            aiMusic.play().catch(e => {
-                console.error('[AI IDLE] Error playing aiMusic:', e.message);
-            });
+        if (typeof aiMusic !== 'undefined' && aiMusic) {
+            aiMusic.muted = false;
+        }
+        if (typeof aiVO !== 'undefined' && aiVO) {
+            aiVO.muted = false;
         }
         console.log('Sound unmuted');
     }
@@ -163,10 +168,10 @@ function offSound() {
         offIcon.classList.remove('d-none');
         console.log('Sound muted');
         if (typeof aiMusic !== 'undefined' && aiMusic) {
-            aiMusic.pause();
+            aiMusic.muted = true;
         }
         if (typeof aiVO !== 'undefined' && aiVO) {
-            aiVO.pause();
+            aiVO.muted = true;
         }
        
     }
@@ -338,14 +343,14 @@ function conditionalArLoader() {
             return;
         }
         
-        console.log("[AR]  missing assets â€“ show loader");
-        // reveal the loader bar (it will be hidden by updateLoadingBar when â‰¥ 98 %)
-        $(".popup-container").removeClass("d-none");   // the element that actually holds the bar
-        $(".loading-container").removeClass("d-none");  // extra safety â€“ both can be un-hidden
-        $(".loading-container-aranimation").removeClass("d-none"); // Make the new loading container visible
-        // reset bar to 0 % visually
-        const bar = document.getElementById("loading-bar");
-        const txt = document.querySelector(".loading-percentage");
+        console.log("[AR]  missing assets â€“ show loader (AR-specific)");
+        // Only show AR loader UI; hide generic loader to prevent mixing
+        $(".popup-container").removeClass("d-none");
+        $(".loading-container-aranimation").removeClass("d-none");
+        $(".loading-container").addClass("d-none");
+        // Reset AR-specific loading bar to 0%
+        const bar = document.getElementById("loading-bar-ar");
+        const txt = document.querySelector(".loading-percentage-ar");
         if (bar) bar.style.width = "0%";
         if (txt) txt.textContent = "0%";
         $(".click-to-play").removeClass("op-0-1");
@@ -386,7 +391,7 @@ function areArAssetsReady() {
     console.log("[AR] Audio elements:", audioEls.map(el => ({ exists: !!el, readyState: el?.readyState })));
 
     const imagesReady = arArrays.every(arr => arr.length > 0 && arr[0].complete && arr[0].naturalHeight !== 0);
-    const audioReady  = audioEls.every(el => el && el.readyState >= 2);   // HAVE_CURRENT_DATA
+    const audioReady  = audioEls.every(el => el && el.src);
     console.log("[AR] Assets ready - images:", imagesReady, "audio:", audioReady);
     return imagesReady && audioReady;
 }
@@ -399,11 +404,11 @@ function isArLoadingComplete() {
 
 // Utility function to get AR loading status
 function getArLoadingStatus() {
-    const bar = document.getElementById("loading-bar");
+    const bar = document.getElementById("loading-bar-ar");
     const progress = bar ? parseInt(bar.style.width) || 0 : 0;
     
     return {
-        complete: isArLoadingComplete() || progress >= 97,
+        complete: isArLoadingComplete() || progress >= 100,
         progress: progress,
         cached: areArAssetsReady(),
         loadingInProgress: window.arLoadingResolve !== undefined
@@ -415,10 +420,19 @@ $(".click-to-play").click(function () {
     if (arIntro) {
         arIntro.play();
         arIntro.pause();
-        arIntro.currentTime = 0;
+        resetAudioStart(arIntro);
     }
      
-    // aiMusic2.play();
+    if (aiMusic2) {
+        aiMusic2.play();
+        aiMusic2.pause();
+        aiMusic2.currentTime = 0;
+    }
+    if (popWhole) {
+        popWhole.play();
+        popWhole.pause();
+        popWhole.currentTime = 0;
+    }
 
     
     console.log("[AR] Click to play clicked - iOS Debug:", {
@@ -453,10 +467,11 @@ $(".click-to-play").click(function () {
         $('.suggestions-slider').slick('unslick');
         $(".click-to-play").addClass("op-0");
     }
+ 
     $(".chatbot__chat.incoming").removeClass("listen-text");
-    $(".sound-toggle.off").removeClass("d-none");
+    $(".sound-toggle.off").addClass("d-none");
     $(".sound-toggle.on").addClass("d-none");
-   
+    console.log("[AR] doAfterLoad completed - AR view transitioned--checking 2");
     // aiMusic2.currentTime = 0;
     // aiMusic2.play();
    
@@ -523,32 +538,33 @@ $(".click-to-play").click(function () {
         aiMusic2.load();
         aiMusic2.currentTime = 0;
         safeAudioPlay(aiMusic2, 'ai-music-2-sound');
-
-
-
-        timeOutPop = setTimeout(delayPop, 5000);
+        safeAudioPlay(popWhole, 'popWhole music').catch(() => {});
+        timeOutPop = setTimeout(delayPop,4000);
         function delayPop() {
-
+            console.log('DelayPop Start', new Date().toLocaleString());
             $(".gadget-container .gadget-item:nth-child(1)").removeClass("op-0-1-none");
             $(".gadget-container .gadget-item:nth-child(1)").addClass("pop-item");
-
             timeOutPop1 = setTimeout(delayPop1, 150);
             function delayPop1() {
+                
                 $(".gadget-container .gadget-item:nth-child(2)").removeClass("op-0-1-none");
                 $(".gadget-container .gadget-item:nth-child(2)").addClass("pop-item");
 
                 timeOutPop1 = setTimeout(delayPop1, 150);
                 function delayPop1() {
+                    
                     $(".gadget-container .gadget-item:nth-child(3)").removeClass("op-0-1-none");
                     $(".gadget-container .gadget-item:nth-child(3)").addClass("pop-item");
 
                     timeOutPop1 = setTimeout(delayPop1, 150);
                     function delayPop1() {
+                        
                         $(".gadget-container .gadget-item:nth-child(4)").removeClass("op-0-1-none");
                         $(".gadget-container .gadget-item:nth-child(4)").addClass("pop-item");
 
                         timeOutPop1 = setTimeout(delayPop1, 150);
                         function delayPop1() {
+                            
                             $(".menu-items .ask-me-anyting").removeClass("op-0-1-none");
                             $(".menu-items .ask-me-anyting").addClass("pop-item");
 
@@ -559,17 +575,20 @@ $(".click-to-play").click(function () {
             }
         
         }
+         setTimeout(doAfterLoad502, 1000);
+         function doAfterLoad502() {
+                
+                console.log("doafter502 - Animation Started");
 
-            // AR assets are ready - start the animations
-            setTimeout(doAfterLoad502, 502);
-            function doAfterLoad502() {
-                console.log("doafter502-Ar Animation Started");
                 $(".png-sequence-ar").removeClass("d-none");
                 stopAnimation();
                 stopIdleAnimation();
                 playArIntroAnimation();
                 
             }
+
+            // AR assets are ready - start the animations
+           
         }
     }).catch((error) => {
         console.error("[AR] Loading failed:", error);
@@ -903,7 +922,7 @@ function safeAudioPlay(audioElement, context = 'unknown') {
                     resolve();
                 })
                 .catch(error => {
-                    console.error(`[safeAudioPlay] Error playing audio (${context}):`, error.message, error.name, {
+                    console.log(`[safeAudioPlay] Error playing audio (${context}):`, error.message, error.name, {
                         src: audioElement.src,
                         readyState: audioElement.readyState,
                         error: audioElement.error,
@@ -928,6 +947,15 @@ function safeAudioPlay(audioElement, context = 'unknown') {
         }
     });
 }
+function resetAudioStart(audioElement) {
+    if (!audioElement) return;
+    try {
+        audioElement.pause();
+        audioElement.currentTime = 0.001;
+    } catch (e) {
+        try { audioElement.currentTime = 0; } catch (_) {}
+    }
+}
 
 function playArIntroAnimation() {
     console.log("[AR INTRO] Starting AR intro animation - iOS Debug:", {
@@ -943,7 +971,7 @@ function playArIntroAnimation() {
             error: arIntro.error
         } : 'undefined'
     });
-    
+    console.log('ArIntro Start Time', new Date().toLocaleString());
     $('.png-frame-ar.intro').removeClass("d-none");
     const arIntroImg = document.getElementById('arIntroImg');
     
@@ -952,9 +980,8 @@ function playArIntroAnimation() {
         return;
     }
 
-    arIntro.currentTime = 0;
-    safeAudioPlay(arIntro, 'AR Intro');
-    safeAudioPlay(popWhole, 'AR Intro');
+    resetAudioStart(arIntro);
+    safeAudioPlay(arIntro, 'AR Intro').catch(() => {});
    
     arIntroInterval = setInterval(function () {
         if (arIntroFrame < arIntroTotalFrames) {
@@ -1015,9 +1042,9 @@ function playArGiftAnimation() {
     arGiftFrame = 0;
     clearInterval(arGiftInterval);
     $('.png-frame-ar.gift').removeClass("d-none");
-    arGift.currentTime = 0;
+    resetAudioStart(arGift);
     timeoutGift = setTimeout(function() {
-        safeAudioPlay(arGift, 'AR Gift');
+        safeAudioPlay(arGift, 'AR Gift').catch(() => {});
     }, 10);
 
     const arGiftImg = document.getElementById('arGiftImg');
@@ -1065,8 +1092,8 @@ function playArBlowerAnimation() {
     arBlowerFrame = 0;
     clearInterval(arBlowerInterval);
     $('.png-frame-ar.blower').removeClass("d-none");
-    arBlower.currentTime = 0;
-    safeAudioPlay(arBlower, 'AR Blower');
+    resetAudioStart(arBlower);
+    safeAudioPlay(arBlower, 'AR Blower').catch(() => {});
 
     const arBlowerImg = document.getElementById('arBlowerImg');
     arBlowerInterval = setInterval(function () {
@@ -1109,8 +1136,8 @@ function playArNailPolishAnimation() {
     arNailPolishFrame = 0;
     clearInterval(arNailPolishInterval);
     $('.png-frame-ar.nail-polish').removeClass("d-none");
-    arNailPolish.currentTime = 0;
-    safeAudioPlay(arNailPolish, 'AR Nail Polish');
+    resetAudioStart(arNailPolish);
+    safeAudioPlay(arNailPolish, 'AR Nail Polish').catch(() => {});
 
     const arNailPolishImg = document.getElementById('arNailPolishImg');
     arNailPolishInterval = setInterval(function () {
@@ -1151,8 +1178,8 @@ function playArMirrorAnimation() {
     arMirrorFrame = 0;
     clearInterval(arMirrorInterval);
     $('.png-frame-ar.mirror').removeClass("d-none");
-    arMirror.currentTime = 0;
-    safeAudioPlay(arMirror, 'AR Mirror');
+    resetAudioStart(arMirror);
+    safeAudioPlay(arMirror, 'AR Mirror').catch(() => {});
     const arMirrorImg = document.getElementById('arMirrorImg');
     arMirrorInterval = setInterval(function () {
         if (arMirrorFrame < arMirrorTotalFrames) {
@@ -1283,7 +1310,9 @@ function loadAiAnimations() {
     console.log('loadAiAnimations: override totalImages =', window.aiOverrideTotalImages);
     window.ailoadedImages = 0;
 
-    console.log('Starting to preload animations...');
+    window.arloadedImages = 0;
+
+    console.log('Starting to preload AR animations...');
     animations.forEach(({ totalFrames, path, target, name }) => {
         console.log("preloadIntroImages call:", name, totalFrames);
         preloadIntroImages(totalFrames, path, target, name);
@@ -1387,20 +1416,20 @@ function updateintroLoadingBar(totalImages, totalAudio) {
         loadedAudio = 0;
         window.loadedAudio = 0;
     }
-    console.log('loadedAudio:', loadedAudio);
-    console.log('totalImages:', totalImages);
-    console.log('totalAudio:', totalAudio);
+    // console.log('loadedAudio:', loadedAudio);
+    // console.log('totalImages:', totalImages);
+    // console.log('totalAudio:', totalAudio);
 
     const denom = (totalImages + totalAudio) || 1;
     const effectiveDenom = (window.TEST_MODE ? totalImages : denom);
     const effectiveLoadedAudio = (window.TEST_MODE ? 0 : loadedAudio);
     let progress = Math.floor(((window.ailoadedImages || 0) + effectiveLoadedAudio) / effectiveDenom * 100);
     
-    console.log('Progress calculation:', {
-        numerator: (window.ailoadedImages || 0) + effectiveLoadedAudio,
-        denominator: effectiveDenom,
-        progress: progress + '%'
-    });
+    // console.log('Progress calculation:', {
+    //     numerator: (window.ailoadedImages || 0) + effectiveLoadedAudio,
+    //     denominator: effectiveDenom,
+    //     progress: progress + '%'
+    // });
     
     if (window.TEST_MODE && (window.ailoadedImages || 0) >= totalImages) {
         progress = 100;
@@ -1538,7 +1567,9 @@ function loadArAudio() {
 function preloadImages(totalFrames, pathTemplate, targetArray, animationName) {
     if (targetArray.__preloading) return;
     const planned = targetArray.__plannedTotal || 0;
-    if (planned >= totalFrames && targetArray.length >= totalFrames) {
+    if (targetArray.length >= totalFrames) {
+        console.log(`[AR Preload] ${animationName} images already exist in array, skipping preload.`);
+        window.arloadedImages += totalFrames;
         updateLoadingBar(window.arOverrideTotalImages || artotalImages, arTotalAudio);
         return;
     }
@@ -1549,11 +1580,16 @@ function preloadImages(totalFrames, pathTemplate, targetArray, animationName) {
         const img = new Image();
         img.src = pathTemplate.replace('{frame}', i.toString().padStart(5, '0'));
         targetArray.push(img);
-        console.log("preloadImages:", animationName, i, img.src);
+        // console.log("preloadImages:", animationName, i, img.src);
         img.onload = () => {
             window.arloadedImages++;
-            console.log("[preloadImages] Image loaded. Calling updateLoadingBar with:", { arloadedImages: window.arloadedImages, arOverrideTotalImages: window.arOverrideTotalImages, artotalImages: artotalImages, arTotalAudio: arTotalAudio });
-            updateLoadingBar(window.arOverrideTotalImages || artotalImages, arTotalAudio);
+            if (!window.updatePending) {
+                window.updatePending = true;
+                requestAnimationFrame(() => {
+                    updateLoadingBar(window.arOverrideTotalImages || artotalImages, arTotalAudio);
+                    window.updatePending = false;
+                });
+            }
             if (window.arloadedImages >= (window.arOverrideTotalImages || artotalImages)) {
                 targetArray.__preloading = false;
             }
@@ -1569,7 +1605,7 @@ function preloadImages(totalFrames, pathTemplate, targetArray, animationName) {
             }
         };
 
-    console.log("preloadImages:", animationName, "totalFrames:", totalFrames, "i:", i);
+    // console.log("preloadImages:", animationName, "totalFrames:", totalFrames, "i:", i);
     }
 }
 
@@ -1716,9 +1752,9 @@ function preloadAudio(audioArray, totalAudio, animationName) {
 
 
 function updateLoadingBar(totalImages, totalAudio) {
-    console.log('[updateLoadingBar] Called with:', { totalImages, totalAudio, arloadedImages: window.arloadedImages, arloadedAudio: window.arloadedAudio });
+    console.log('[updateLoadingBar-2] Called with:', { totalImages, totalAudio, arloadedImages: window.arloadedImages, arloadedAudio: window.arloadedAudio });
 
-    const ti = Number(window.arOverrideTotalImages || totalImages) || 0;
+    const ti = Number(totalImages) ;
     const ta = Number(totalAudio) || 0;
     const denom = (ti + ta) || 1;
     

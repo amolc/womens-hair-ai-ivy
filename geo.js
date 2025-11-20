@@ -1,6 +1,10 @@
+// In Geo.js write an onload function that gives us the counry and voiceLanguage
 
-// version 1.1 - removed the error on line 26
-console.log("geo.js v=2.0");
+console.log("[GEO] geo.js - version 2.0")
+let localCountryCode = 'GB';
+let localLanguage = 'EN';
+let sessionData = {};
+
 const countriesVO = {
   GB: "Intro-Ai-VO.mp3#t=0.001",
   DE: "ADA-DE-VO.mp3#t=0.001",
@@ -195,64 +199,155 @@ const txtShopNow = [
 ];
 
 
+function setLocalization(browserLang) {
+  let lang = localLanguage;
+  let country = localCountryCode;
+  if (browserLang && browserLang.includes('-')) {
+    const parts = browserLang.split('-');
+    lang = parts[0].toUpperCase();
+    country = parts[1].toUpperCase();
+  }
+  return { localLanguage: lang, localCountryCode: country };
+}
 
+async function generateSessionId() {
+  try {
+    // Get user timezone
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    
+    // Get browser language and platform
+    const browserLang = navigator.language || 'unknown';
+    const platform = navigator.platform || 'unknown';
+    
+    // Get screen resolution for device insights
+    const screenResolution = `${window.screen.width}x${window.screen.height}`;
+    
+    // Get current timestamp
+    const timestamp = new Date().toISOString();
+    
+    // Try to get IP address (using a free IP API service)
+    let ipAddress = 'unknown';
+    let country = 'unknown';
+    try {
+      const ipResponse = await fetch('http://ip-api.com/json');
+      const ipData = await ipResponse.json();
+      ipAddress = ipData.query || 'unknown';
+      country = ipData.country || 'unknown';
+    } catch (ipError) {
+      // Fallback: use a hashed combination of other identifiers if IP fails
+      ipAddress = 'local-' + Math.random().toString(36).substr(2, 9);
+    }
+    
+    const localization = setLocalization(browserLang);
 
-var localCountryCode = '';
-var localLanguage = '';
+    const sessionData = {
+      timestamp: timestamp,
+      ipAddress: ipAddress,
+      country: country,
+      timezone: timezone,
+      platform: platform,
+      browserLang: browserLang,
+      screenResolution: screenResolution,
+      ...localization
+    };
 
-// API URL for geolocation requests
-// const api_url = 'https://api-stage.ivybears.ai/';
+    // Save all parameters to localStorage
+    localStorage.setItem('session_params', JSON.stringify(sessionData));
 
+    return sessionData;
+  } catch (error) {
+    // Fallback session data if anything fails
+    console.error("[GEO] Error generating session ID:", error);
+    const fallbackData = {
+        error: "Failed to generate session data",
+        details: error.message,
+        timestamp: new Date().toISOString()
+    };
+    return fallbackData;
+  }
+}
 
-function runTranslation(countryCode) {
-  console.log("runTranslation called with country code: " + countryCode);
+// This function represents the rest of your application
+// It will only be called AFTER sessionData is ready.
+function initializeApp(data) {
+  console.log("[GEO] Application is initializing with session data:", data);
+  
+  // Set global language and country, defaulting to EN/GB if not DE
+  if (data.localCountryCode !== 'DE' && data.localLanguage !== 'DE') {
+    localLanguage = 'EN';
+    localCountryCode = 'GB';
+  } else {
+    localLanguage = 'DE';
+    localCountryCode = 'DE';
+  }
 
-  if (countriesVO[countryCode] !== null && countriesVO[countryCode] !== undefined) {
-    // document.getElementById('ai-vo').setAttribute('src','assets/Media/VO/' + countriesVO[countryCode]);
-    // document.getElementById('ar-intro').setAttribute('src','assets/Media/ARVO/' + countriesARVO[countryCode]);
+  runTranslation();
+}
 
-    // document.getElementById('ar-blower').setAttribute('src','assets/Media/ARVO/' + arARVO[0][countryCode]);
-    // document.getElementById('ar-mirror').setAttribute('src','assets/Media/ARVO/' + arARVO[1][countryCode]);
-    // document.getElementById('ar-nail-polish').setAttribute('src','assets/Media/ARVO/' + arARVO[2][countryCode]);
-    // document.getElementById('ar-gift').setAttribute('src','assets/Media/ARVO/' + arARVO[3][countryCode]);
+window.onload = async function() {
+  try {
+    sessionData = await generateSessionId();
+    console.log('[GEO] Session Data is ready:', sessionData);
+    
+    // Now that sessionData is ready, we can call our next functions
+    initializeApp(sessionData);
+
+  } catch (error) {
+    console.error('[GEO] Error generating session ID:', error);
+  }
+};
+
+console.log("[GEO] geo.js - version 2.0 loaded")
+
+function runTranslation() {
+  console.log("[GEO] runTranslation called with country code: ", localCountryCode);
+
+  if (countriesVO[localCountryCode] !== null && countriesVO[localCountryCode] !== undefined) {
+    // document.getElementById('ai-vo').setAttribute('src','assets/Media/VO/' + countriesVO[localCountryCode]);
+    // document.getElementById('ar-intro').setAttribute('src','assets/Media/ARVO/' + countriesARVO[localCountryCode]);
+
+    // document.getElementById('ar-blower').setAttribute('src','assets/Media/ARVO/' + arARVO[0][localCountryCode]);
+    // document.getElementById('ar-mirror').setAttribute('src','assets/Media/ARVO/' + arARVO[1][localCountryCode]);
+    // document.getElementById('ar-nail-polish').setAttribute('src','assets/Media/ARVO/' + arARVO[2][localCountryCode]);
+    // document.getElementById('ar-gift').setAttribute('src','assets/Media/ARVO/' + arARVO[3][localCountryCode]);
   
     //Splash
-    // document.querySelector('.camera-prompt .prompt-message h3').textContent = txtSplash[0][countryCode];
-    // document.querySelector('.camera-prompt .click-camera').textContent = txtSplash[1][countryCode];
+    // document.querySelector('.camera-prompt .prompt-message h3').textContent = txtSplash[0][localCountryCode];
+    // document.querySelector('.camera-prompt .click-camera').textContent = txtSplash[1][localCountryCode];
 
     //Access
-    // document.querySelector('.custom-popup .popup-container h3').textContent = txtAccess[0][countryCode];
-    // document.querySelector('.custom-popup .popup-container .on-sound').textContent = txtAccess[1][countryCode];
+    // document.querySelector('.custom-popup .popup-container h3').textContent = txtAccess[0][localCountryCode];
+    // document.querySelector('.custom-popup .popup-container .on-sound').textContent = txtAccess[1][localCountryCode];
 
     //Landing01
-    document.querySelector('.suggestions-slider:nth-child(1) .suggestions-box:nth-child(1) .suggestions-text p').textContent = txtLanding[0][countryCode];
-    document.querySelector('.suggestions-slider:nth-child(1) .suggestions-box:nth-child(2) .suggestions-text p').textContent = txtLanding[1][countryCode];
+    document.querySelector('.suggestions-slider:nth-child(1) .suggestions-box:nth-child(1) .suggestions-text p').textContent = txtLanding[0][localCountryCode];
+    document.querySelector('.suggestions-slider:nth-child(1) .suggestions-box:nth-child(2) .suggestions-text p').textContent = txtLanding[1][localCountryCode];
 
     //Landing02
-    document.querySelector('.suggestions-slider:nth-child(2) .suggestions-box:nth-child(1) .suggestions-text p').textContent = txtLanding[2][countryCode];
-    document.querySelector('.suggestions-slider:nth-child(2) .suggestions-box:nth-child(2) .suggestions-text p').textContent = txtLanding[3][countryCode];
+    document.querySelector('.suggestions-slider:nth-child(2) .suggestions-box:nth-child(1) .suggestions-text p').textContent = txtLanding[2][localCountryCode];
+    document.querySelector('.suggestions-slider:nth-child(2) .suggestions-box:nth-child(2) .suggestions-text p').textContent = txtLanding[3][localCountryCode];
 
     //Landing03
-    document.querySelector('.suggestions-slider:nth-child(3) .suggestions-box:nth-child(1) .suggestions-text p').textContent = txtLanding[4][countryCode];
-    document.querySelector('.suggestions-slider:nth-child(3) .suggestions-box:nth-child(2) .suggestions-text p').textContent = txtLanding[5][countryCode];
+    document.querySelector('.suggestions-slider:nth-child(3) .suggestions-box:nth-child(1) .suggestions-text p').textContent = txtLanding[4][localCountryCode];
+    document.querySelector('.suggestions-slider:nth-child(3) .suggestions-box:nth-child(2) .suggestions-text p').textContent = txtLanding[5][localCountryCode];
 
     //chatbox prompt
-    document.querySelector('.voice-timer p:nth-child(1)').textContent = txtLanding[6][countryCode];
+    document.querySelector('.voice-timer p:nth-child(1)').textContent = txtLanding[6][localCountryCode];
 
     //ARLanding
-    document.querySelector('.tap-to-learn-container h2 span.tap-cta').textContent = txtARLanding[0][countryCode];
+    document.querySelector('.tap-to-learn-container h2 span.tap-cta').textContent = txtARLanding[0][localCountryCode];
 
     //Images
-    document.querySelectorAll('img.click-to-play').forEach(el => el.src = imgLoc[0][countryCode]); // Gift
-    document.querySelector('.shop-now-popup a img').src = imgLoc[1][countryCode];
-    document.querySelector('.animation-sequence-container img:nth-child(1)').src = imgLoc[2][countryCode];
-    document.querySelector('img.ask-me-anyting').src = imgLoc[3][countryCode];
-    document.querySelector('#startRecord img').src = imgLoc[4][countryCode];
-    document.querySelector('#stopRecord img').src = imgLoc[5][countryCode];
+    document.querySelectorAll('img.click-to-play').forEach(el => el.src = imgLoc[0][localCountryCode]); // Gift
+    document.querySelector('.shop-now-popup a img').src = imgLoc[1][localCountryCode];
+    document.querySelector('.animation-sequence-container img:nth-child(1)').src = imgLoc[2][localCountryCode];
+    document.querySelector('img.ask-me-anyting').src = imgLoc[3][localCountryCode];
+    document.querySelector('#startRecord img').src = imgLoc[4][localCountryCode];
+    document.querySelector('#stopRecord img').src = imgLoc[5][localCountryCode];
 
     //ShopNow
-    document.querySelector('.shop-now-inner h3 span.norm').textContent = txtShopNow[0][countryCode];
-    document.querySelector('.shop-now-inner h3.black').textContent = txtShopNow[1][countryCode];
+    document.querySelector('.shop-now-inner h3 span.norm').textContent = txtShopNow[0][localCountryCode];
+    document.querySelector('.shop-now-inner h3.black').textContent = txtShopNow[1][localCountryCode];
 
   }
 
@@ -264,80 +359,3 @@ function runTranslation(countryCode) {
   document.getElementById('arMirrorImg').setAttribute('src','assets/Media/'+ localLanguage +'/ARBlower/ARBear_Blower_00000.webp');
 
 }
-
-window.addEventListener("load", () => {
-  // Try browser geolocation first (requires HTTPS and user permission)
-  if ("geolocation" in navigator) {
-    console.log("Browser geolocation available, requesting permission...");
-    navigator.geolocation.getCurrentPosition(onSuccess, onError, {
-      timeout: 10000, // 10 second timeout
-      enableHighAccuracy: false
-    });
-  } else {
-    console.log("Browser geolocation not supported, using server-side fallback");
-    getCountryFromCoordinates(); // Call without coordinates to trigger IP geolocation
-  }
-
-  function onSuccess(position) {
-      console.log("Browser geolocation successful");
-      const lat = position.coords.latitude;
-      const lng = position.coords.longitude;
-      getCountryFromCoordinates(lat, lng);
-    }
-
-    function onError(error) {
-      console.log("Browser geolocation failed: " + error.message + ", using server-side fallback");
-      getCountryFromCoordinates(); // Call without coordinates to trigger IP geolocation
-    }
-
-    function getCountryFromCoordinates(lat, lng) {
-      // Call backend geolocation endpoint instead of directly calling Google Maps API
-      const requestBody = {};
-      
-      // Only include coordinates if they were provided
-      if (typeof lat !== 'undefined' && typeof lng !== 'undefined') {
-        requestBody.latitude = lat;
-        requestBody.longitude = lng;
-        console.log(`Using browser coordinates: ${lat}, ${lng}`);
-      } else {
-        console.log("No coordinates provided, using IP-based geolocation");
-      }
-
-      // Make request to backend geolocation endpoint
-      fetch(api_url + 'api/geolocation/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(requestBody)
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.success && data.country_code) {
-            console.log(`Geolocation successful: You are in ${data.country_code}. Source: ${data.source || 'unknown'}`);
-
-            // Force DE for German translation testing
-            localCountryCode = 'GB';
-
-            // localLanguage = ["DE","PH"].includes(localCountryCode) ? "DE" : "EN"; //main.js
-            localLanguage = ["DE"].includes(localCountryCode) ? "DE" : "EN"; //main.js
-            console.log("calling runTranslation with country code: " + localCountryCode);
-            runTranslation(localCountryCode);
-
-          } else {
-            console.log("Geolocation failed: " + (data.error || "Unknown error"));
-            // Fallback to default country
-            localCountryCode = 'GB';
-            localLanguage = 'EN';
-            runTranslation(localCountryCode);
-          }
-        })
-        .catch((err) => {
-          console.log("Geolocation request failed: " + err);
-          // Fallback to default country on network error
-         
-          localLanguage = 'EN';
-          runTranslation(localCountryCode);
-        });
-    }
-});

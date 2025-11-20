@@ -31,24 +31,7 @@ let response_data = {};
 
 
 
-// Simple session ID encryption
-const ENCRYPT_SALT = "rabbithole";
 
-function encryptSessionData(sessionDataString) {
-    try {
-        // Simple XOR encryption with base64 encoding
-        let encrypted = "";
-        for (let i = 0; i < sessionDataString.length; i++) {
-            encrypted += String.fromCharCode(sessionDataString.charCodeAt(i) ^ ENCRYPT_SALT.charCodeAt(i % ENCRYPT_SALT.length));
-        }
-        // Return base64 encoded encrypted data
-        return btoa(encrypted);
-    } catch (error) {
-        console.error('Encryption failed:', error);
-        // Fallback to base64 encoding only
-        return btoa(sessionDataString);
-    }
-}
 
 
 // Function to format URLs in text content
@@ -78,14 +61,8 @@ function formatURLs(element) {
 window.onload = function () {
   console.log('window.onload - ai -v3.102');
   
-  // create the sessionid on load and save it in localstorage, then use it from localstorage
-  if (!localStorage.getItem('sessionId')) {
-    generateSessionId().then(sessionId => {
-      localStorage.setItem('sessionId', sessionId);
-    });
-  } else {
-    sessionId = localStorage.getItem('sessionId');
-  }
+  // get sessionid from localstorage, it is generated in geo.js
+  sessionId = localStorage.getItem('sessionId');
 
   // Format any existing chat messages (for page reloads)
   var chatTextElements = document.querySelectorAll('.chatbot__chat p');
@@ -112,73 +89,7 @@ function showNotification(message, type = 'error') {
 }
 
 
-// ==================== GENERATE MEANINGFUL SESSION ID WITH USER INSIGHTS ====================
 
-async function generateSessionId() {
-  try {
-    // Get user timezone
-    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    
-    // Get browser language and platform
-    const browserLang = navigator.language || 'unknown';
-    const platform = navigator.platform || 'unknown';
-    
-    // Get screen resolution for device insights
-    const screenResolution = `${window.screen.width}x${window.screen.height}`;
-    
-    // Get current timestamp
-    const timestamp = new Date().toISOString();
-    
-    // Try to get IP address (using a free IP API service)
-    let ipAddress = 'unknown';
-    let country = 'unknown';
-    try {
-      const ipResponse = await fetch('http://ip-api.com/json');
-      const ipData = await ipResponse.json();
-      ipAddress = ipData.query || 'unknown';
-      country = ipData.country || 'unknown';
-    } catch (ipError) {
-      // Fallback: use a hashed combination of other identifiers if IP fails
-      ipAddress = 'local-' + Math.random().toString(36).substr(2, 9);
-    }
-    
-        // Save all parameters to localStorage
-    localStorage.setItem('session_params', JSON.stringify({
-      timestamp: timestamp,
-      ipAddress: ipAddress,
-      country: country,
-      timezone: timezone,
-      platform: platform,
-      browserLang: browserLang,
-      screenResolution: screenResolution
-    }));
-
-    // Create a meaningful session ID format: timestamp_ip_country_timezone_platform_lang_resolution
-    const sessionIdString = `${timestamp}_${ipAddress}_${country}_${timezone}_${platform}_${browserLang}_${screenResolution}`;
-    
-    // Encrypt the session ID to hide user information
-    try {
-      const encryptedSessionId = encryptSessionData(sessionIdString);
-      console.log("Generated encrypted session ID (original data hidden)");
-      return encryptedSessionId;
-    } catch (error) {
-      console.warn("Session encryption failed, using unencrypted session ID:", error);
-      return sessionIdString;
-    }
-  } catch (error) {
-    // Fallback session ID if anything fails
-    console.error("Error generating session ID:", error);
-    const fallbackId = `fallback_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    
-    // Try to encrypt the fallback ID too
-    try {
-      return encryptSessionData(fallbackId);
-    } catch (error) {
-      console.warn("Failed to encrypt fallback session ID:", error);
-      return fallbackId;
-    }
-  }
-}
 
 
 
@@ -286,30 +197,16 @@ const generateResponse = async (incomingChatLi) => {
   let preFetchedAudio = null;
   console.log('Input Language: ' + voiceLanguage);
   
-  let storedSessionId = localStorage.getItem('sessionId');
-  if (storedSessionId) {
-    sessionId = storedSessionId;
+  sessionId = localStorage.getItem('sessionId');
+  if (sessionId) {
     console.log('Retrieved session ID from localStorage:', sessionId);
-  } else if (!sessionId) {
-    sessionId = await generateSessionId();
-    localStorage.setItem('sessionId', sessionId);
-    console.log('Generated new session ID and saved to localStorage:', sessionId);
+  } else {
+    console.error('Session ID not found in localStorage.');
   }
 
-  // Extract language from sessionId
-  let sessionLanguage = 'en-US';
-  const storedSessionParams = localStorage.getItem('session_params');
-  if (storedSessionParams) {
-    try {
-      const params = JSON.parse(storedSessionParams);
-      if (params.browserLang) {
-        sessionLanguage = params.browserLang;
-      }
-    } catch (e) {
-      console.error("Error parsing session_params from localStorage:", e);
-    }
-  }
-  console.log('Extracted language from sessionId:', sessionLanguage);
+  // Extract language from geo.js
+  let sessionLanguage = window.localLanguage || 'en';
+  console.log('Language from geo.js:', sessionLanguage);
   
   if (voiceLanguage) {
     sessionLanguage = voiceLanguage;
