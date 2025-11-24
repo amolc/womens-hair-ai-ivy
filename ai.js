@@ -379,7 +379,7 @@ const handleChat = () => {
     top: chatBox.scrollHeight,
     behavior: 'smooth'
   });
-  generateResponse(incomingChatLi);
+  // generateResponse(incomingChatLi);
 };
 
 

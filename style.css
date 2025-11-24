@@ -430,9 +430,7 @@ img {
 }
 
 /* add peek */
-.suggestions-slider .slick-list {
-    /* padding: 0 45% 0 0 !important; */
-}
+
 
 .suggestions-slider .slick-slide {
     margin: 0 .3em;
@@ -469,7 +467,7 @@ img {
 
 /* add spacing */
 .chatbot__chat.incoming .thinking {
-    padding-right: 1.5em;
+    padding-right: .5em;
 }
 
 /* add elipsis */
@@ -478,7 +476,9 @@ img {
     display: inline-block;
     animation: ellipsisAnimation 1s infinite;
     position: absolute;
+    border:1px solid red;
 }
+
 
 .loading-ellipsis {
     position: relative;
@@ -576,6 +576,8 @@ img {
     display:inline-flex !important;
     max-width: 95%;
     margin-left: 2.5% !important;
+    border:1px solid red;
+    padding-right: 10px;
 }
 
 .feedback-buttons {
@@ -622,11 +624,13 @@ img {
     min-width: 20%;
     border-radius: 0 20px 20px 20px;
     white-space: break-spaces;
+    padding-right:100px;
+    border:1px solid blue;
 }
 
 .chatbot__chat.incoming {
     display: flex;
-    gap: 0;
+    gap: 10px;
     position: relative;
 }
 
@@ -1123,6 +1127,7 @@ img {
     /* background: url('assets/Media/AiSequence/AiHair_Intro_00000.webp') no-repeat; */
     background-size: contain !important;
     background-position: center !important;
+    transition: transform 0.3s ease-in-out;
 }
 
 
