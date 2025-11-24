@@ -413,6 +413,7 @@ $(".click-to-play").click(function () {
         $(".ar-into-animation").addClass("op-1");
         $('.suggestions-slider').slick('unslick');
         $(".click-to-play").addClass("op-0");
+        $(".back-button").removeClass("d-none");
     }
  
     $(".chatbot__chat.incoming").removeClass("listen-text");

@@ -290,7 +290,7 @@ img {
 .back-button {
     position: absolute;
     left: 2%;
-    top: 18% !important;
+    top: 12% !important;
     cursor: pointer;
     z-index: 99;
 }
@@ -366,6 +366,15 @@ img {
 
 .sound-toggle {
     width: min(35px, 100%) !important;
+}
+
+/* Sound toggle container positioning */
+.sound-toggle-container {
+    margin-left: 30px;
+    margin-right: 0;
+    display: flex;
+    align-items: right;
+  
 }
 
 .menu-items img {
@@ -936,6 +945,7 @@ img {
 /* ==================== AR INTO ANIMATION ==================== */
 .ar-into-animation {
     /*     background-color: red; */
+    background-image: url(assets/ada-bg.webp);
     position: absolute;
     top: 0;
     left: 0;
@@ -1236,7 +1246,7 @@ img {
 }
 
 .png-sequence-ar {
-    /*     background-color: lightblue */
+    /* background-color: lightblue */
     position: absolute;
     /* height: 340px;
         width: 340px; */
@@ -1286,7 +1296,7 @@ img {
 
 /* AR POPUP */
 .shop-now-popup {
-    
+    background-image: url(assets/IVYBEARS_AI_ADA_9x16_Cover_FA.webp);
     background-position: center;
     background-size: cover;
     background-repeat: no-repeat;
