@@ -198,21 +198,30 @@ const generateResponse = async (incomingChatLi) => {
   const inputType = voiceLanguage ? 1 : 0;
   let preFetchedAudio = null;
   console.log('Input Language: ' + voiceLanguage);
+
+  session_params = localStorage.getItem('session_params');
+  console.log('[Generate Response] Decrypted - session_params:', session_params);
+  
+  // Parse the session data from JSON string to object
+  let sessionData = {};
+  try {
+    sessionData = JSON.parse(session_params);
+  } catch (e) {
+    console.error('[Generate Response] Failed to parse session_params:', e);
+  }
   
   sessionId = localStorage.getItem('sessionId');
-  if (sessionId) {
-    console.log('Retrieved session ID from localStorage:', sessionId);
-  } else {
-    console.error('Session ID not found in localStorage.');
-  }
+  console.log('[Generate Response] SessionId - sessionId:', sessionId);
 
   // Extract language from geo.js
-  let sessionLanguage = window.localLanguage || 'en';
-  console.log('Language from geo.js:', sessionLanguage);
+  let sessionLanguage = sessionData.browserLang;
+  console.log('[Generate Response] Language from geo.js:', sessionLanguage);
   
+
+
   if (voiceLanguage) {
     sessionLanguage = voiceLanguage;
-    console.log('sessionLanguage updated with voiceLanguage:', sessionLanguage);
+    console.log('[Generate Response] sessionLanguage updated with voiceLanguage:', sessionLanguage);
     voiceLanguage = '';
   }
 
@@ -220,12 +229,11 @@ const generateResponse = async (incomingChatLi) => {
     let assistantResponse;
     console.log('userMessage ready for chatpayload:', userMessage);
     const data = await getChat(userMessage, assist_name, sessionLanguage, sessionId, inputType);
-    console.log('Chat Response:', JSON.stringify(data, null, 2));
     console.log('[generateResponse] Detected language from backend:', data.detected_language);
+    console.log('Chat Response:', JSON.stringify(data, null, 2));
+ 
     
-    // Start displaying the message immediately - don't wait for audio pre-fetch
-    sessionLanguage = localStorage.getItem('session_params');
-    console.log('generateResponse');
+
     const messageElement = incomingChatLi.querySelector('p');
     console.log(userMessage);
     assistantResponse = String(data.answer);

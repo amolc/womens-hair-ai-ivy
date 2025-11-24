@@ -1,6 +1,6 @@
 // In Geo.js write an onload function that gives us the counry and voiceLanguage
 
-console.log("[GEO] geo.js - version 2.0")
+console.log("[GEO] geo.js - version 2.1")
 let localCountryCode = 'GB';
 let localLanguage = 'EN';
 let sessionData = {};
@@ -225,17 +225,34 @@ async function generateSessionId() {
     // Get current timestamp
     const timestamp = new Date().toISOString();
     
-    // Try to get IP address (using a free IP API service)
+    // Try to get IP address and geolocation using our own API
     let ipAddress = 'unknown';
     let country = 'unknown';
+    let city = 'unknown';
     try {
-      const ipResponse = await fetch('http://ip-api.com/json');
-      const ipData = await ipResponse.json();
-      ipAddress = ipData.query || 'unknown';
-      country = ipData.country || 'unknown';
+      console.log('[GEO] Fetching geolocation information from our API...');
+      const ipResponse = await fetch('https://api-stage.ivybears.ai/api/geolocation/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      if (!ipResponse.ok) {
+        throw new Error(`Geolocation API responded with status: ${ipResponse.status}`);
+      }
+      const geoData = await ipResponse.json();
+      
+      // Extract IP and country from our API response
+      ipAddress = geoData.ip_address || 'unknown';
+      country = geoData.country_code || geoData.country || 'unknown';
+      city = geoData.city || 'unknown';
+      
+      console.log('[GEO] Geolocation information fetched successfully:', { ipAddress, country, city, geoData });
     } catch (ipError) {
-      // Fallback: use a hashed combination of other identifiers if IP fails
+      console.error('[GEO] Geolocation API fetch failed:', ipError);
+      // Fallback: use a hashed combination of other identifiers if API fails
       ipAddress = 'local-' + Math.random().toString(36).substr(2, 9);
+      console.log('[GEO] Using fallback IP:', ipAddress);
     }
     
     const localization = setLocalization(browserLang);
@@ -244,6 +261,7 @@ async function generateSessionId() {
       timestamp: timestamp,
       ipAddress: ipAddress,
       country: country,
+      city: city,
       timezone: timezone,
       platform: platform,
       browserLang: browserLang,
@@ -254,6 +272,8 @@ async function generateSessionId() {
     // Save all parameters to localStorage
     localStorage.setItem('session_params', JSON.stringify(sessionData));
 
+    // test the localStorage
+    console.log('[GEO] Stored session_params:', localStorage.getItem('session_params'));
     return sessionData;
   } catch (error) {
     // Fallback session data if anything fails
@@ -284,20 +304,25 @@ function initializeApp(data) {
   runTranslation();
 }
 
-window.onload = async function() {
+window.onload = function() {
   try {
-    sessionData = await generateSessionId();
-    console.log('[GEO] Session Data is ready:', sessionData);
-    
-    // Now that sessionData is ready, we can call our next functions
-    initializeApp(sessionData);
+    console.log("[GEO] geo.js - version 2.0 loaded");
+    console.log('[GEO] Window loaded, generating session ID...');
+    generateSessionId().then(sessionData => {
+      console.log('[GEO] Session Data is ready:', sessionData);
+      
+      // Now that sessionData is ready, we can call our next functions
+      initializeApp(sessionData);
+      encryptSessionData(sessionData);
+      console.log('[GEO] All initialization functions completed');
+    }).catch(error => {
+      console.error('[GEO] Error generating session ID:', error);
+    });
 
   } catch (error) {
-    console.error('[GEO] Error generating session ID:', error);
+    console.error('[GEO] Error in window.onload:', error);
   }
 };
-
-console.log("[GEO] geo.js - version 2.0 loaded")
 
 function runTranslation() {
   console.log("[GEO] runTranslation called with country code: ", localCountryCode);
@@ -358,4 +383,47 @@ function runTranslation() {
   document.getElementById('arNailPolishImg').setAttribute('src','assets/Media/'+ localLanguage +'/ARBlower/ARBear_Blower_00000.webp');
   document.getElementById('arMirrorImg').setAttribute('src','assets/Media/'+ localLanguage +'/ARBlower/ARBear_Blower_00000.webp');
 
+}
+
+/**
+ * Simple XOR encryption for session data using fixed salt "rabbithole"
+ * 
+ * @param {object} sessionData - The session data object to encrypt
+ * @returns {string} Encrypted session data as base64 string
+ */
+function encryptSessionData(sessionData) {
+  const ENCRYPT_SALT = "rabbithole";
+  
+  try {
+    // Convert session data to JSON string
+    const sessionDataString = JSON.stringify(sessionData);
+    console.log('[GEO] Original session data:', sessionDataString);
+    
+    // Simple XOR encryption
+    let encrypted = "";
+    for (let i = 0; i < sessionDataString.length; i++) {
+      const charCode = sessionDataString.charCodeAt(i);
+      const saltCharCode = ENCRYPT_SALT.charCodeAt(i % ENCRYPT_SALT.length);
+      encrypted += String.fromCharCode(charCode ^ saltCharCode);
+    }
+    
+    // Return base64 encoded encrypted data
+    const base64Encoded = btoa(encrypted);
+    console.log('[GEO] Encrypted session data (base64):', base64Encoded);
+    
+    // Store the encrypted data in localStorage as both sessionId and session_params
+    localStorage.setItem('sessionId', base64Encoded);
+    console.log('[GEO] Encrypted session data stored in localStorage as both sessionId and session_params');
+    
+    return base64Encoded;
+  } catch (error) {
+    console.error('[GEO] Encryption failed:', error);
+    // Fallback to base64 encoding only
+    const sessionDataString = JSON.stringify(sessionData);
+    const base64Encoded = btoa(sessionDataString);
+    // Store the fallback data in localStorage as both sessionId and session_params
+    localStorage.setItem('sessionId', base64Encoded);
+    console.log('[GEO] Fallback: Session data stored with base64 encoding only in both sessionId and session_params');
+    return base64Encoded;
+  }
 }

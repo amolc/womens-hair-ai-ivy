@@ -202,62 +202,9 @@ window.addEventListener('DOMContentLoaded', function() {
 // ==================== AFTER ACCESS OPEN ELEMENTS ====================
 // open this after all permissions are granted
 function afterAccess() {
-    $(".custom-popup").addClass("d-none");
-    // ---------- CUSTOM CALLS ----------
-    // $(".splash-page").removeClass("d-none");
-    $(".all-prompts-container").addClass("d-none");
-    // $(".splash-page")[0].play();
-    // cameraPrompt.addClass("d-none");
-    mainContainer.addClass("no-bg");
+  
 
-    setTimeout(doAfterLoad500, 500);
-    
-    function doAfterLoad500() {
-          aiChat.removeClass("d-none");
-        // setTimeout(doAfterLoad1000, 1000);
-        // function doAfterLoad1000() {
-        // $(".splash-page").addClass("d-none");
-        // $(".splash-page")[0].pause();
        
-        $(".ivybears-header").removeClass("d-none");
-
-        $('.suggestions-slider').slick({ // Slick slider options 
-            dots: false,
-            arrows: false,
-            // infinite: true,
-            speed: 300,
-            slidesToShow: 1,
-            touchThreshold: 10,
-            variableWidth: true, // Allow different widths
-            swipeToSlide: true, // Enable free scrolling effect
-
-        });
-        }
-
-        // AUDIO DEBUGGING
-        console.log("[AUDIO DEBUG] aiMusic element:", aiMusic);
-        console.log("[AUDIO DEBUG] aiVO element:", aiVO);
-        if (aiMusic) {
-            console.log("[AUDIO DEBUG] aiMusic.src:", aiMusic.src);
-            console.log("[AUDIO DEBUG] aiMusic.readyState:", aiMusic.readyState);
-            console.log("[AUDIO DEBUG] aiMusic.networkState:", aiMusic.networkState);
-            console.log("[AUDIO DEBUG] aiMusic.error:", aiMusic.error);
-        }
-        if (aiVO) {
-            console.log("[AUDIO DEBUG] aiVO.src:", aiVO.src);
-            console.log("[AUDIO DEBUG] aiVO.readyState:", aiVO.readyState);
-            console.log("[AUDIO DEBUG] aiVO.networkState:", aiVO.networkState);
-            console.log("[AUDIO DEBUG] aiVO.error:", aiVO.error);
-        }
-
-        aiMusic.pause();
-        aiMusic.currentTime = 0;
-        aiMusic.play();
-        aiVO.pause();
-        aiVO.currentTime = 0;
-        $('.png-frame-ai.intro').removeClass("d-none");
-        $('.png-frame-ai.idle').addClass("d-none");
-
 }
 
 // ==================== BACK BUTTON ====================
@@ -1228,20 +1175,17 @@ const totalAudio = 7; // Number of audio files
 
 $(".on-sound").click(function () {
     enableMic();
-    afterAccess();
-    aiMusic.play();
-    aiVO.play();
-
-    setTimeout(function() {
-        aiMusic.pause();
-        aiMusic.currentTime = 0;
-        aiVO.pause();
-        aiVO.currentTime = 0;
-    }, 10);
-
-    setTimeout(function() {
+   
+    // Play audio with proper error handling
+    setTimeout(delay20, 20);
+            
+    function delay20() {  // Small delay to ensure proper initialization
+        $(".custom-popup").addClass("d-none");
+        $(".all-prompts-container").addClass("d-none");
+        mainContainer.addClass("no-bg");
         try {
             if (aiMusic) {
+                aiMusic.currentTime = 0; // Reset to beginning
                 aiMusic.play().catch(e => {
                     console.error('Error playing aiMusic:', e.message);
                     console.error('aiMusic error details:', e);
@@ -1251,6 +1195,7 @@ $(".on-sound").click(function () {
             }
             
             if (aiVO) {
+                aiVO.currentTime = 0; // Reset to beginning
                 aiVO.play().catch(e => {
                     console.error('Error playing aiVO:', e.message);
                     console.error('aiVO error details:', e);
@@ -1263,7 +1208,38 @@ $(".on-sound").click(function () {
         }
         
         playAnimation();
-    }, 20);
+    }
+
+   
+
+    setTimeout(doAfterLoad500, 500);
+    
+    function doAfterLoad500() {
+          aiChat.removeClass("d-none");
+        // setTimeout(doAfterLoad1000, 1000);
+        // function doAfterLoad1000() {
+        // $(".splash-page").addClass("d-none");
+        // $(".splash-page")[0].pause();
+       
+        $(".ivybears-header").removeClass("d-none");
+
+        $('.suggestions-slider').slick({ // Slick slider options 
+            dots: false,
+            arrows: false,
+            // infinite: true,
+            speed: 300,
+            slidesToShow: 1,
+            touchThreshold: 10,
+            variableWidth: true, // Allow different widths
+            swipeToSlide: true, // Enable free scrolling effect
+
+        });
+
+        $('.png-frame-ai.intro').removeClass("d-none");
+        $('.png-frame-ai.idle').addClass("d-none");
+        }
+
+     
 });
 
 
