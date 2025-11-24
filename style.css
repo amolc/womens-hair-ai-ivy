@@ -476,7 +476,9 @@ img {
     display: inline-block;
     animation: ellipsisAnimation 1s infinite;
     position: absolute;
-    border:1px solid red;
+    right: 0.8em;
+    top: 50%;
+    transform: translateY(-50%);
 }
 
 
@@ -576,7 +578,6 @@ img {
     display:inline-flex !important;
     max-width: 95%;
     margin-left: 2.5% !important;
-    border:1px solid red;
     padding-right: 10px;
 }
 
@@ -624,8 +625,7 @@ img {
     min-width: 20%;
     border-radius: 0 20px 20px 20px;
     white-space: break-spaces;
-    padding-right:100px;
-    border:1px solid blue;
+    padding-right: 5em;
 }
 
 .chatbot__chat.incoming {
