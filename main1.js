@@ -1,6 +1,6 @@
 // ==================== LANGUAGE SETTING ====================
 // const localLanguage = "EN"; // Set default language to English
-console.log("main.js - v13.22")
+console.log("main.js - v12.22")
 
 // ==================== SET CUSTOM HEIGHT OF THE MAIN CONTAINER ====================
 function setVh() {
@@ -59,15 +59,11 @@ if (aiMusic2) {
     console.log("aiMusic2.tagName:", aiMusic2.tagName);
 }
 
-
-
 // Check if audio elements exist in DOM
 console.log("Checking DOM for audio elements:");
 console.log("document.getElementById('ai-vo'):", document.getElementById('ai-vo'));
 console.log("document.getElementById('ai-music'):", document.getElementById('ai-music'));
 console.log("document.getElementById('ai-music-2'):", document.getElementById('ai-music-2'));
-console.log("document.getElementById('pop-whole'):", document.getElementById('pop-whole'));
-
 
 // Test loading the audio files
 console.log("=== TESTING AUDIO FILE LOADING ===");
@@ -144,50 +140,60 @@ window.addEventListener("load", function() {
     // Your code here runs after the entire page loads
 });
 
-function onSound() {
-    const onIcon = document.querySelector('.sound-toggle.on');
-    const offIcon = document.querySelector('.sound-toggle.off');
-    if (onIcon && offIcon) {
-        onIcon.classList.remove('d-none');
-        offIcon.classList.add('d-none');
-        if (typeof aiMusic !== 'undefined' && aiMusic) {
-            aiMusic.muted = false;
-        }
-        if (typeof aiVO !== 'undefined' && aiVO) {
-            aiVO.muted = false;
-        }
-        console.log('Sound unmuted');
-    }
-}
-
-function offSound() {
-    const onIcon = document.querySelector('.sound-toggle.on');
-    const offIcon = document.querySelector('.sound-toggle.off');
-    if (onIcon && offIcon) {
-        onIcon.classList.add('d-none');
-        offIcon.classList.remove('d-none');
-        console.log('Sound muted');
-        if (typeof aiMusic !== 'undefined' && aiMusic) {
-            aiMusic.muted = true;
-        }
-        if (typeof aiVO !== 'undefined' && aiVO) {
-            aiVO.muted = true;
-        }
-       
-    }
-}
-
 // Sound toggle functionality
 window.addEventListener('DOMContentLoaded', function() {
     const soundToggles = document.querySelectorAll('.sound-toggle');
     
     soundToggles.forEach(toggle => {
         toggle.addEventListener('click', function() {
+            // Toggle the visibility of on/off icons
             const onIcon = document.querySelector('.sound-toggle.on');
-            if (onIcon && onIcon.classList.contains('d-none')) {
-                onSound();
-            } else {
-                offSound();
+            const offIcon = document.querySelector('.sound-toggle.off');
+            
+            if (onIcon && offIcon) {
+                if (onIcon.classList.contains('d-none')) {
+                    // Currently muted - unmute
+                    onIcon.classList.remove('d-none');
+                    offIcon.classList.add('d-none');
+                    console.log('Sound unmuted');
+                    
+                    // Resume idle animation music if available
+                    if (typeof aiMusic !== 'undefined' && aiMusic) {
+                        aiMusic.play().catch(e => console.log('aiMusic play error:', e));
+                    }
+                    if (typeof aiVO !== 'undefined' && aiVO) {
+                        aiVO.play().catch(e => console.log('aiVO play error:', e));
+                    }
+                    if (typeof aiMusic2 !== 'undefined' && aiMusic2) {
+                        aiMusic2.play().catch(e => console.log('aiMusic2 play error:', e));
+                    }
+                } else {
+                    // Currently playing - mute
+                    onIcon.classList.add('d-none');
+                    offIcon.classList.remove('d-none');
+                    console.log('Sound muted');
+                    
+                    // Pause all sounds including idle animation music
+                    if (typeof stopAllSpeech === 'function') {
+                        stopAllSpeech().then(() => {
+                            console.log('All speech stopped successfully');
+                        }).catch(error => {
+                            console.error('Error stopping speech:', error);
+                        });
+                    } else {
+                        console.warn('stopAllSpeech function not found');
+                    }
+                    
+                    // Pause idle animation music
+                    if (typeof aiMusic !== 'undefined' && aiMusic) {
+                        aiMusic.pause();
+                    }
+                    if (typeof aiVO !== 'undefined' && aiVO) {
+                        aiVO.pause();
+                    }
+                    
+                   
+                }
             }
         });
     });
@@ -202,16 +208,66 @@ window.addEventListener('DOMContentLoaded', function() {
 // ==================== AFTER ACCESS OPEN ELEMENTS ====================
 // open this after all permissions are granted
 function afterAccess() {
-  
+    $(".custom-popup").addClass("d-none");
+    // ---------- CUSTOM CALLS ----------
+    // $(".splash-page").removeClass("d-none");
+    $(".all-prompts-container").addClass("d-none");
+    // $(".splash-page")[0].play();
+    // cameraPrompt.addClass("d-none");
+    mainContainer.addClass("no-bg");
 
+    setTimeout(doAfterLoad500, 500);
+    
+    function doAfterLoad500() {
+          aiChat.removeClass("d-none");
+        // setTimeout(doAfterLoad1000, 1000);
+        // function doAfterLoad1000() {
+        // $(".splash-page").addClass("d-none");
+        // $(".splash-page")[0].pause();
        
+        $(".ivybears-header").removeClass("d-none");
+
+        $('.suggestions-slider').slick({ // Slick slider options 
+            dots: false,
+            arrows: false,
+            // infinite: true,
+            speed: 300,
+            slidesToShow: 1,
+            touchThreshold: 10,
+            variableWidth: true, // Allow different widths
+            swipeToSlide: true, // Enable free scrolling effect
+
+        });
+        }
+
+        // AUDIO DEBUGGING
+        console.log("[AUDIO DEBUG] aiMusic element:", aiMusic);
+        console.log("[AUDIO DEBUG] aiVO element:", aiVO);
+        if (aiMusic) {
+            console.log("[AUDIO DEBUG] aiMusic.src:", aiMusic.src);
+            console.log("[AUDIO DEBUG] aiMusic.readyState:", aiMusic.readyState);
+            console.log("[AUDIO DEBUG] aiMusic.networkState:", aiMusic.networkState);
+            console.log("[AUDIO DEBUG] aiMusic.error:", aiMusic.error);
+        }
+        if (aiVO) {
+            console.log("[AUDIO DEBUG] aiVO.src:", aiVO.src);
+            console.log("[AUDIO DEBUG] aiVO.readyState:", aiVO.readyState);
+            console.log("[AUDIO DEBUG] aiVO.networkState:", aiVO.networkState);
+            console.log("[AUDIO DEBUG] aiVO.error:", aiVO.error);
+        }
+
+        aiMusic.pause();
+        aiMusic.currentTime = 0;
+        aiMusic.play();
+        aiVO.pause();
+        aiVO.currentTime = 0;
+        $('.png-frame-ai.intro').removeClass("d-none");
+        $('.png-frame-ai.idle').addClass("d-none");
+
 }
-
-
 
 // ==================== BACK BUTTON ====================
 $(".ivybears-header .back-button").click(function () {
-    console.log("Back button clicked");
     // CUSTOM CALL AFTER BACK
     $(".hold-to-speak.outside").removeClass("op-0-1");
     $(".hold-to-speak.outside").addClass("startVoice");
@@ -226,8 +282,8 @@ $(".ivybears-header .back-button").click(function () {
     // $(".sound-toggle.off").removeClass("d-none");
     // $(".sound-toggle.on").addClass("d-none");
     $(".chatbot__chat.incoming").removeClass("listen-text");
-    $(".sound-toggle.off").addClass("d-none");
-    $(".sound-toggle.on").removeClass("d-none");
+    $(".sound-toggle.off").removeClass("d-none");
+    $(".sound-toggle.on").addClass("d-none");
     stopAllSpeech();
     stopAnimation();
 
@@ -239,27 +295,18 @@ $(".ivybears-header .back-button").click(function () {
     $(".chatbot-content").removeClass("with-chat");
     $(".chatbot__box").removeClass("with-chat");
 
+    $('.suggestions-slider').slick({ // Slick slider options 
+        dots: false,
+        arrows: false,
+        // infinite: true,
+        speed: 300,
+        slidesToShow: 1,
+        touchThreshold: 10,
+        variableWidth: true, // Allow different widths
+        swipeToSlide: true, // Enable free scrolling effect
 
-    setTimeout(() => {
-        console.log("reinit slick");
-        playIdleAnimation();
-         $('.suggestions-slider').slick('unslick'); // Slick slider options 
-         $('.suggestions-slider').slick({ // Slick slider options 
-            dots: false,
-            arrows: false,
-            // infinite: true,
-            speed: 300,
-            slidesToShow: 1,
-            touchThreshold: 10,
-            variableWidth: true, // Allow different widths
-            swipeToSlide: true, // Enable free scrolling effect
-
-        });
-    }, 500);    
+    });
 });
-
-
-
 
 // ==================== PLUS ICON ====================
 $(".plus-icon").click(function () {
@@ -296,20 +343,20 @@ function conditionalArLoader() {
         });
         
         if (areArAssetsReady()) {
-            console.log("[AR]  all assets cached â€“ skip loader");
+            console.log("[AR]  all assets cached – skip loader");
             window.arLoadingComplete = true;
             resolve({ success: true, cached: true, message: "AR assets already loaded" });
             return;
         }
         
-        console.log("[AR]  missing assets â€“ show loader (AR-specific)");
-        // Only show AR loader UI; hide generic loader to prevent mixing
-        $(".popup-container").removeClass("d-none");
-        $(".loading-container-aranimation").removeClass("d-none");
-        $(".loading-container").addClass("d-none");
-        // Reset AR-specific loading bar to 0%
-        const bar = document.getElementById("loading-bar-ar");
-        const txt = document.querySelector(".loading-percentage-ar");
+        console.log("[AR]  missing assets – show loader");
+        // reveal the loader bar (it will be hidden by updateLoadingBar when ≥ 98 %)
+        $(".popup-container").removeClass("d-none");   // the element that actually holds the bar
+        $(".loading-container").removeClass("d-none");  // extra safety – both can be un-hidden
+        $(".loading-container-aranimation").removeClass("d-none"); // Make the new loading container visible
+        // reset bar to 0 % visually
+        const bar = document.getElementById("loading-bar");
+        const txt = document.querySelector(".loading-percentage");
         if (bar) bar.style.width = "0%";
         if (txt) txt.textContent = "0%";
         $(".click-to-play").removeClass("op-0-1");
@@ -350,7 +397,7 @@ function areArAssetsReady() {
     console.log("[AR] Audio elements:", audioEls.map(el => ({ exists: !!el, readyState: el?.readyState })));
 
     const imagesReady = arArrays.every(arr => arr.length > 0 && arr[0].complete && arr[0].naturalHeight !== 0);
-    const audioReady  = audioEls.every(el => el && el.src);
+    const audioReady  = audioEls.every(el => el && el.readyState >= 2);   // HAVE_CURRENT_DATA
     console.log("[AR] Assets ready - images:", imagesReady, "audio:", audioReady);
     return imagesReady && audioReady;
 }
@@ -363,11 +410,11 @@ function isArLoadingComplete() {
 
 // Utility function to get AR loading status
 function getArLoadingStatus() {
-    const bar = document.getElementById("loading-bar-ar");
+    const bar = document.getElementById("loading-bar");
     const progress = bar ? parseInt(bar.style.width) || 0 : 0;
     
     return {
-        complete: isArLoadingComplete() || progress >= 100,
+        complete: isArLoadingComplete() || progress >= 97,
         progress: progress,
         cached: areArAssetsReady(),
         loadingInProgress: window.arLoadingResolve !== undefined
@@ -376,24 +423,6 @@ function getArLoadingStatus() {
 
 
 $(".click-to-play").click(function () {
-    if (arIntro) {
-        arIntro.play();
-        arIntro.pause();
-        resetAudioStart(arIntro);
-    }
-     
-    if (aiMusic2) {
-        aiMusic2.play();
-        aiMusic2.pause();
-        aiMusic2.currentTime = 0;
-    }
-    if (popWhole) {
-        popWhole.play();
-        popWhole.pause();
-        popWhole.currentTime = 0;
-    }
-
-    
     console.log("[AR] Click to play clicked - iOS Debug:", {
         timestamp: Date.now(),
         isIOS: isIOS(),
@@ -415,7 +444,7 @@ $(".click-to-play").click(function () {
     $(".click-to-play").removeClass("op-1");
     $(".click-to-play").addClass("op-0");
     // $(".popup-container").removeClass("d-none");   // the element that actually holds the bar
-    // $(".loading-container").removeClass("d-none");  // extra safety â€“ both can be un-hidden
+    // $(".loading-container").removeClass("d-none");  // extra safety – both can be un-hidden
     
     setTimeout(doAfterLoad, 500);
     function doAfterLoad() {
@@ -425,13 +454,11 @@ $(".click-to-play").click(function () {
         $(".ar-into-animation").addClass("op-1");
         $('.suggestions-slider').slick('unslick');
         $(".click-to-play").addClass("op-0");
-        $(".back-button-animation").removeClass("d-none");
     }
- 
     $(".chatbot__chat.incoming").removeClass("listen-text");
-    $(".sound-toggle.off").addClass("d-none");
+    $(".sound-toggle.off").removeClass("d-none");
     $(".sound-toggle.on").addClass("d-none");
-    console.log("[AR] doAfterLoad completed - AR view transitioned--checking 2");
+   
     // aiMusic2.currentTime = 0;
     // aiMusic2.play();
    
@@ -449,30 +476,22 @@ $(".click-to-play").click(function () {
     $(".ar-into-animation .back-button").removeClass("d-none");
     $(".ar-into-animation .back-button").removeClass("op-0-1");
     
-    
-    $(".back-button-animation.ask-me-anyting").click(function () {
-        console.log("backbutton.ask-me-anyting");
+    $(".ar-into-animation .back-button").click(function () {
         $(".ar-into-animation").removeClass("op-1");
         $(".ar-into-animation").addClass("op-0");
-        $(".ar-into-animation .back-button-animation").addClass("d-none");
+        $(".ar-into-animation .back-button").addClass("d-none");
         stopAllAr();
-        setTimeout(animationbackbuttonload, 500);
-        function animationbackbuttonload() {
+        setTimeout(backbuttondoAfterLoad, 500);
+        function backbuttondoAfterLoad() {
             $(".ai-chat").removeClass("d-none");
             $(".ar-into-animation").addClass("d-none");
-            $(".click-to-play").removeClass("op-0");
             $(".click-to-play").removeClass("op-0-1");
+            $(".click-to-play").removeClass("op-0");
             $(".click-to-play").addClass("op-1");
-            $(".sound-toggle.on").removeClass("d-none");
-            $(".sound-toggle.off").addClass("d-none");
-            stopAllAr();
             playIdleAnimation();
-            console.log("click to play");
+
         }
-
-
     });
-  
 
     console.log("[AR] Starting conditionalArLoader...");
     console.log("[AR] Pre-loader audio state:", {
@@ -489,7 +508,7 @@ $(".click-to-play").click(function () {
         
         if (result.success) {
         console.log("[AR] Assets loaded successfully, starting animations...");
-        
+        playArIntroAnimation();
         console.log("[AR] Post-loader audio state:", {
             arIntro: typeof arIntro !== 'undefined' ? {
                 src: arIntro.src,
@@ -501,38 +520,37 @@ $(".click-to-play").click(function () {
 
         popWhole.load();
         popWhole.currentTime = 0;
-       
+        popWhole.play();
 
         aiMusic2.load();
         aiMusic2.currentTime = 0;
-        safeAudioPlay(aiMusic2, 'ai-music-2-sound');
-        safeAudioPlay(popWhole, 'popWhole music').catch(() => {});
-        timeOutPop = setTimeout(delayPop,4000);
+        aiMusic2.play();
+
+
+
+        timeOutPop = setTimeout(delayPop, 5000);
         function delayPop() {
-            console.log('DelayPop Start', new Date().toLocaleString());
+
             $(".gadget-container .gadget-item:nth-child(1)").removeClass("op-0-1-none");
             $(".gadget-container .gadget-item:nth-child(1)").addClass("pop-item");
+
             timeOutPop1 = setTimeout(delayPop1, 150);
             function delayPop1() {
-                
                 $(".gadget-container .gadget-item:nth-child(2)").removeClass("op-0-1-none");
                 $(".gadget-container .gadget-item:nth-child(2)").addClass("pop-item");
 
                 timeOutPop1 = setTimeout(delayPop1, 150);
                 function delayPop1() {
-                    
                     $(".gadget-container .gadget-item:nth-child(3)").removeClass("op-0-1-none");
                     $(".gadget-container .gadget-item:nth-child(3)").addClass("pop-item");
 
                     timeOutPop1 = setTimeout(delayPop1, 150);
                     function delayPop1() {
-                        
                         $(".gadget-container .gadget-item:nth-child(4)").removeClass("op-0-1-none");
                         $(".gadget-container .gadget-item:nth-child(4)").addClass("pop-item");
 
                         timeOutPop1 = setTimeout(delayPop1, 150);
                         function delayPop1() {
-                            
                             $(".menu-items .ask-me-anyting").removeClass("op-0-1-none");
                             $(".menu-items .ask-me-anyting").addClass("pop-item");
 
@@ -543,20 +561,16 @@ $(".click-to-play").click(function () {
             }
         
         }
-         setTimeout(doAfterLoad502, 1000);
-         function doAfterLoad502() {
-                
-                console.log("doafter502 - Animation Started");
 
+            // AR assets are ready - start the animations
+            setTimeout(doAfterLoad502, 502);
+            function doAfterLoad502() {
+                console.log("doafter502-Ar Animation Started");
                 $(".png-sequence-ar").removeClass("d-none");
                 stopAnimation();
                 stopIdleAnimation();
                 playArIntroAnimation();
-                
             }
-
-            // AR assets are ready - start the animations
-           
         }
     }).catch((error) => {
         console.error("[AR] Loading failed:", error);
@@ -821,6 +835,11 @@ function playIdleAnimation() {
     idleFrame = 0;
     console.log("[AI IDLE] Starting idle animation");
     idleInterval = setInterval(function () {
+        if (aiMusic && aiMusic.paused) {
+            aiMusic.play().catch(e => {
+                console.error('[AI IDLE] Error playing aiMusic:', e.message);
+            });
+        }
         if (idleFrame < idleTotalFrames) {
             const currentIdle = idleFrame;
             const framePath = `assets/Media/AiIdle-new/Idle-Animation-V2-${currentIdle.toString().padStart(5, '0')}.webp`;
@@ -890,7 +909,7 @@ function safeAudioPlay(audioElement, context = 'unknown') {
                     resolve();
                 })
                 .catch(error => {
-                    console.log(`[safeAudioPlay] Error playing audio (${context}):`, error.message, error.name, {
+                    console.error(`[safeAudioPlay] Error playing audio (${context}):`, error.message, error.name, {
                         src: audioElement.src,
                         readyState: audioElement.readyState,
                         error: audioElement.error,
@@ -907,22 +926,13 @@ function safeAudioPlay(audioElement, context = 'unknown') {
             audioElement.volume = 1.0;
             
             // iOS requires explicit user interaction - try to play on next tick
-            console.log(`[safeAudioPlay] Scheduling iOS audio play for: ${context} (IMMEDIATE)`);
-            playAudio();
+            console.log(`[safeAudioPlay] Scheduling iOS audio play for: ${context} (100ms delay)`);
+            setTimeout(playAudio, 100);
         } else {
             console.log(`[safeAudioPlay] Non-iOS device - playing audio immediately for: ${context}`);
             playAudio();
         }
     });
-}
-function resetAudioStart(audioElement) {
-    if (!audioElement) return;
-    try {
-        audioElement.pause();
-        audioElement.currentTime = 0.001;
-    } catch (e) {
-        try { audioElement.currentTime = 0; } catch (_) {}
-    }
 }
 
 function playArIntroAnimation() {
@@ -939,7 +949,7 @@ function playArIntroAnimation() {
             error: arIntro.error
         } : 'undefined'
     });
-    console.log('ArIntro Start Time', new Date().toLocaleString());
+    
     $('.png-frame-ar.intro').removeClass("d-none");
     const arIntroImg = document.getElementById('arIntroImg');
     
@@ -948,9 +958,9 @@ function playArIntroAnimation() {
         return;
     }
 
-    resetAudioStart(arIntro);
-    safeAudioPlay(arIntro, 'AR Intro').catch(() => {});
-   
+    arIntro.currentTime = 0;
+    safeAudioPlay(arIntro, 'AR Intro');
+    
     arIntroInterval = setInterval(function () {
         if (arIntroFrame < arIntroTotalFrames) {
             arIntroImg.src = `assets/Media/${localLanguage}/ARIntro/ARHair_Intro_${arIntroFrame.toString().padStart(5, '0')}.webp`;
@@ -1010,10 +1020,10 @@ function playArGiftAnimation() {
     arGiftFrame = 0;
     clearInterval(arGiftInterval);
     $('.png-frame-ar.gift').removeClass("d-none");
-    resetAudioStart(arGift);
+    arGift.currentTime = 0;
     timeoutGift = setTimeout(function() {
-        safeAudioPlay(arGift, 'AR Gift').catch(() => {});
-    }, 10);
+        safeAudioPlay(arGift, 'AR Gift');
+    }, 1300);
 
     const arGiftImg = document.getElementById('arGiftImg');
     arGiftInterval = setInterval(function () {
@@ -1060,8 +1070,8 @@ function playArBlowerAnimation() {
     arBlowerFrame = 0;
     clearInterval(arBlowerInterval);
     $('.png-frame-ar.blower').removeClass("d-none");
-    resetAudioStart(arBlower);
-    safeAudioPlay(arBlower, 'AR Blower').catch(() => {});
+    arBlower.currentTime = 0;
+    safeAudioPlay(arBlower, 'AR Blower');
 
     const arBlowerImg = document.getElementById('arBlowerImg');
     arBlowerInterval = setInterval(function () {
@@ -1104,8 +1114,8 @@ function playArNailPolishAnimation() {
     arNailPolishFrame = 0;
     clearInterval(arNailPolishInterval);
     $('.png-frame-ar.nail-polish').removeClass("d-none");
-    resetAudioStart(arNailPolish);
-    safeAudioPlay(arNailPolish, 'AR Nail Polish').catch(() => {});
+    arNailPolish.currentTime = 0;
+    safeAudioPlay(arNailPolish, 'AR Nail Polish');
 
     const arNailPolishImg = document.getElementById('arNailPolishImg');
     arNailPolishInterval = setInterval(function () {
@@ -1146,8 +1156,8 @@ function playArMirrorAnimation() {
     arMirrorFrame = 0;
     clearInterval(arMirrorInterval);
     $('.png-frame-ar.mirror').removeClass("d-none");
-    resetAudioStart(arMirror);
-    safeAudioPlay(arMirror, 'AR Mirror').catch(() => {});
+    arMirror.currentTime = 0;
+    safeAudioPlay(arMirror, 'AR Mirror');
     const arMirrorImg = document.getElementById('arMirrorImg');
     arMirrorInterval = setInterval(function () {
         if (arMirrorFrame < arMirrorTotalFrames) {
@@ -1196,17 +1206,20 @@ const totalAudio = 7; // Number of audio files
 
 $(".on-sound").click(function () {
     enableMic();
-   
-    // Play audio with proper error handling
-    setTimeout(delay20, 20);
-            
-    function delay20() {  // Small delay to ensure proper initialization
-        $(".custom-popup").addClass("d-none");
-        $(".all-prompts-container").addClass("d-none");
-        mainContainer.addClass("no-bg");
+    afterAccess();
+    aiMusic.play();
+    aiVO.play();
+
+    setTimeout(function() {
+        aiMusic.pause();
+        aiMusic.currentTime = 0;
+        aiVO.pause();
+        aiVO.currentTime = 0;
+    }, 10);
+
+    setTimeout(function() {
         try {
             if (aiMusic) {
-                aiMusic.currentTime = 0; // Reset to beginning
                 aiMusic.play().catch(e => {
                     console.error('Error playing aiMusic:', e.message);
                     console.error('aiMusic error details:', e);
@@ -1216,7 +1229,6 @@ $(".on-sound").click(function () {
             }
             
             if (aiVO) {
-                aiVO.currentTime = 0; // Reset to beginning
                 aiVO.play().catch(e => {
                     console.error('Error playing aiVO:', e.message);
                     console.error('aiVO error details:', e);
@@ -1229,38 +1241,7 @@ $(".on-sound").click(function () {
         }
         
         playAnimation();
-    }
-
-   
-
-    setTimeout(doAfterLoad500, 500);
-    
-    function doAfterLoad500() {
-          aiChat.removeClass("d-none");
-        // setTimeout(doAfterLoad1000, 1000);
-        // function doAfterLoad1000() {
-        // $(".splash-page").addClass("d-none");
-        // $(".splash-page")[0].pause();
-       
-        $(".ivybears-header").removeClass("d-none");
-
-        $('.suggestions-slider').slick({ // Slick slider options 
-            dots: false,
-            arrows: false,
-            // infinite: true,
-            speed: 300,
-            slidesToShow: 1,
-            touchThreshold: 10,
-            variableWidth: true, // Allow different widths
-            swipeToSlide: true, // Enable free scrolling effect
-
-        });
-
-        $('.png-frame-ai.intro').removeClass("d-none");
-        $('.png-frame-ai.idle').addClass("d-none");
-        }
-
-     
+    }, 20);
 });
 
 
@@ -1307,9 +1288,7 @@ function loadAiAnimations() {
     console.log('loadAiAnimations: override totalImages =', window.aiOverrideTotalImages);
     window.ailoadedImages = 0;
 
-    window.arloadedImages = 0;
-
-    console.log('Starting to preload AR animations...');
+    console.log('Starting to preload animations...');
     animations.forEach(({ totalFrames, path, target, name }) => {
         console.log("preloadIntroImages call:", name, totalFrames);
         preloadIntroImages(totalFrames, path, target, name);
@@ -1413,20 +1392,20 @@ function updateintroLoadingBar(totalImages, totalAudio) {
         loadedAudio = 0;
         window.loadedAudio = 0;
     }
-    // console.log('loadedAudio:', loadedAudio);
-    // console.log('totalImages:', totalImages);
-    // console.log('totalAudio:', totalAudio);
+    console.log('loadedAudio:', loadedAudio);
+    console.log('totalImages:', totalImages);
+    console.log('totalAudio:', totalAudio);
 
     const denom = (totalImages + totalAudio) || 1;
     const effectiveDenom = (window.TEST_MODE ? totalImages : denom);
     const effectiveLoadedAudio = (window.TEST_MODE ? 0 : loadedAudio);
     let progress = Math.floor(((window.ailoadedImages || 0) + effectiveLoadedAudio) / effectiveDenom * 100);
     
-    // console.log('Progress calculation:', {
-    //     numerator: (window.ailoadedImages || 0) + effectiveLoadedAudio,
-    //     denominator: effectiveDenom,
-    //     progress: progress + '%'
-    // });
+    console.log('Progress calculation:', {
+        numerator: (window.ailoadedImages || 0) + effectiveLoadedAudio,
+        denominator: effectiveDenom,
+        progress: progress + '%'
+    });
     
     if (window.TEST_MODE && (window.ailoadedImages || 0) >= totalImages) {
         progress = 100;
@@ -1564,9 +1543,7 @@ function loadArAudio() {
 function preloadImages(totalFrames, pathTemplate, targetArray, animationName) {
     if (targetArray.__preloading) return;
     const planned = targetArray.__plannedTotal || 0;
-    if (targetArray.length >= totalFrames) {
-        console.log(`[AR Preload] ${animationName} images already exist in array, skipping preload.`);
-        window.arloadedImages += totalFrames;
+    if (planned >= totalFrames && targetArray.length >= totalFrames) {
         updateLoadingBar(window.arOverrideTotalImages || artotalImages, arTotalAudio);
         return;
     }
@@ -1577,16 +1554,11 @@ function preloadImages(totalFrames, pathTemplate, targetArray, animationName) {
         const img = new Image();
         img.src = pathTemplate.replace('{frame}', i.toString().padStart(5, '0'));
         targetArray.push(img);
-        // console.log("preloadImages:", animationName, i, img.src);
+        console.log("preloadImages:", animationName, i, img.src);
         img.onload = () => {
             window.arloadedImages++;
-            if (!window.updatePending) {
-                window.updatePending = true;
-                requestAnimationFrame(() => {
-                    updateLoadingBar(window.arOverrideTotalImages || artotalImages, arTotalAudio);
-                    window.updatePending = false;
-                });
-            }
+            console.log("[preloadImages] Image loaded. Calling updateLoadingBar with:", { arloadedImages: window.arloadedImages, arOverrideTotalImages: window.arOverrideTotalImages, artotalImages: artotalImages, arTotalAudio: arTotalAudio });
+            updateLoadingBar(window.arOverrideTotalImages || artotalImages, arTotalAudio);
             if (window.arloadedImages >= (window.arOverrideTotalImages || artotalImages)) {
                 targetArray.__preloading = false;
             }
@@ -1602,7 +1574,7 @@ function preloadImages(totalFrames, pathTemplate, targetArray, animationName) {
             }
         };
 
-    // console.log("preloadImages:", animationName, "totalFrames:", totalFrames, "i:", i);
+    console.log("preloadImages:", animationName, "totalFrames:", totalFrames, "i:", i);
     }
 }
 
@@ -1749,9 +1721,9 @@ function preloadAudio(audioArray, totalAudio, animationName) {
 
 
 function updateLoadingBar(totalImages, totalAudio) {
-    console.log('[updateLoadingBar-2] Called with:', { totalImages, totalAudio, arloadedImages: window.arloadedImages, arloadedAudio: window.arloadedAudio });
+    console.log('[updateLoadingBar] Called with:', { totalImages, totalAudio, arloadedImages: window.arloadedImages, arloadedAudio: window.arloadedAudio });
 
-    const ti = Number(totalImages) ;
+    const ti = Number(window.arOverrideTotalImages || totalImages) || 0;
     const ta = Number(totalAudio) || 0;
     const denom = (ti + ta) || 1;
     

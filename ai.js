@@ -29,6 +29,109 @@ let responseLang = 'en-US';
 let response_assist_name = 'Ada';
 let response_data = {};
 
+// Early session data initialization on page load
+async function initializeSessionData() {
+  console.log('[AI] Initializing session data early...');
+  const sessionInfo = await waitForSessionData();
+  console.log('[AI] Early session initialization complete:', sessionInfo);
+  return sessionInfo;
+}
+
+// Initialize session data when ai.js loads
+initializeSessionData().catch(error => {
+  console.error('[AI] Failed to initialize session data:', error);
+});
+
+// Session data initialization with retry logic
+async function waitForSessionData() {
+  let maxRetries = 3; // Increased retries for better reliability
+  let retryCount = 0;
+  
+  while (retryCount < maxRetries) {
+    const session_params = localStorage.getItem('session_params');
+    const sessionId = localStorage.getItem('sessionId');
+    
+    if (session_params && sessionId) {
+      try {
+        const sessionData = JSON.parse(session_params);
+        console.log('[AI] Session data initialized successfully:', sessionData);
+        return {
+          sessionData: sessionData,
+          sessionId: sessionId
+        };
+      } catch (e) {
+        console.error('[AI] Failed to parse session_params:', e);
+      }
+    }
+    
+    console.log(`[AI] Waiting for session data from geo.js... retry ${retryCount + 1}/${maxRetries}`);
+    await new Promise(resolve => setTimeout(resolve, 300)); // Reduced wait time
+    retryCount++;
+  }
+  
+  console.log('[AI] Session data not available from geo.js, generating it...');
+  
+  // Generate session data similar to geo.js
+  try {
+    // Get browser language and platform
+    const browserLang = navigator.language || 'en-US';
+    const platform = navigator.platform || 'unknown';
+    
+    // Get screen resolution
+    const screenResolution = `${window.screen.width}x${window.screen.height}`;
+    
+    // Get current timestamp
+    const timestamp = new Date().toISOString();
+    
+    // Generate session ID
+    const generatedSessionId = 'ai-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+    
+    // Create session data similar to geo.js
+    const sessionData = {
+      sessionId: generatedSessionId,
+      ip_address: 'unknown',
+      country: 'US',
+      city: 'unknown',
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'unknown',
+      browserLang: browserLang,
+      platform: platform,
+      screenResolution: screenResolution,
+      timestamp: timestamp,
+      generated_by: 'ai.js'
+    };
+    
+    // Store in localStorage
+    localStorage.setItem('session_params', JSON.stringify(sessionData));
+    localStorage.setItem('sessionId', generatedSessionId);
+    
+    console.log('[AI] Generated session data:', sessionData);
+    return {
+      sessionData: sessionData,
+      sessionId: generatedSessionId
+    };
+    
+  } catch (error) {
+    console.error('[AI] Failed to generate session data:', error);
+    
+    // Ultimate fallback
+    const fallbackSessionId = 'fallback-' + Date.now();
+    const fallbackData = {
+      browserLang: 'en-US',
+      country: 'US',
+      sessionId: fallbackSessionId,
+      generated_by: 'ai.js-fallback'
+    };
+    
+    localStorage.setItem('session_params', JSON.stringify(fallbackData));
+    localStorage.setItem('sessionId', fallbackSessionId);
+    
+    return {
+      sessionData: fallbackData,
+      sessionId: fallbackSessionId
+    };
+  }
+}
+
 
 
 
@@ -196,25 +299,15 @@ const getChat = async (userMessage, assist_name, detectedLanguage, sessionId, in
 const generateResponse = async (incomingChatLi) => {
   const messageElement = incomingChatLi.querySelector('p');
   const inputType = voiceLanguage ? 1 : 0;
-  let preFetchedAudio = null;
   console.log('Input Language: ' + voiceLanguage);
 
-  session_params = localStorage.getItem('session_params');
-  console.log('[Generate Response] Decrypted - session_params:', session_params);
-  
-  // Parse the session data from JSON string to object
-  let sessionData = {};
-  try {
-    sessionData = JSON.parse(session_params);
-  } catch (e) {
-    console.error('[Generate Response] Failed to parse session_params:', e);
-  }
-  
-  sessionId = localStorage.getItem('sessionId');
-  console.log('[Generate Response] SessionId - sessionId:', sessionId);
+  // Wait for session data to be available
+  const sessionInfo = await waitForSessionData();
+  const sessionData = sessionInfo.sessionData;
+  const sessionId = sessionInfo.sessionId;
 
   // Extract language from geo.js
-  let sessionLanguage = sessionData.browserLang;
+  let sessionLanguage = sessionData.browserLang || 'en-US';
   console.log('[Generate Response] Language from geo.js:', sessionLanguage);
   
 
@@ -332,7 +425,10 @@ const createChatElement = (message, className) => {
 
 
 
-const handleChat = () => {
+const handleChat = async () => {
+  // Ensure session data is available before proceeding
+  const sessionInfo = await waitForSessionData();
+  
   userMessage = chatInput.value.trim();
   if (!userMessage) return;
   chatInput.value = '';
@@ -391,11 +487,11 @@ chatInput.addEventListener('input', () => {
 });
 
 // ==================== Send chat on Enter key press (without Shift) on larger screens ====================
-chatInput.addEventListener('keydown', (e) => {
+chatInput.addEventListener('keydown', async (e) => {
   console.log('keydown');
   if (e.key === 'Enter' && !e.shiftKey && window.innerWidth > 300) {
     e.preventDefault();
-    handleChat();
+    await handleChat();
     $(".startVoice.on-bar").removeClass("d-none");
     $(".mic-guide").removeClass("d-none");
     $("#send-btn").addClass("d-none");
@@ -405,8 +501,8 @@ chatInput.addEventListener('keydown', (e) => {
 
 
 // ==================== SEND TO CHAT AND ADD ANIMATION ====================
-sendChatBtn.addEventListener("click", function () {
-  handleChat();
+sendChatBtn.addEventListener("click", async function () {
+  await handleChat();
   $(".mic-container").removeClass("d-none");
   $("#send-btn").addClass("d-none");
 });

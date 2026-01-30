@@ -155,7 +155,7 @@ const txtLanding = [
     DE: "⚗️ Wurde die Wirksamkeit von Ivybears klinisch getestet?"
   },
   {
-    GB: "Speaking   ",
+    GB: "Thinking",
     // SG: "Spracheingabe...",
     // PH: "Spracheingabe...",
     // DE: "Spracheingabe..."
